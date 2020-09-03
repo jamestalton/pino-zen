@@ -22,10 +22,10 @@ let Bold = "";
 let reset = "";
 let comma = ",";
 let colon = ":";
-let openBrace = "{";
-let closeBrace = "}";
-let openBracket = "[";
-let closeBracket = "]";
+let openBrace = "{ ";
+let closeBrace = " }";
+let openBracket = "[ ";
+let closeBracket = " ]";
 let variable = "";
 let defaultColor = "";
 
