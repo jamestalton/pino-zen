@@ -7,7 +7,7 @@
     },
     "scripts": {
         "build": "tsc -t es2018 --moduleResolution node pino-zen.ts",
-        "test": "cat test.json | node pino-zen"
+        "test": "npm run build && cat test.json | node pino-zen"
     },
     "repository": {
         "type": "git",

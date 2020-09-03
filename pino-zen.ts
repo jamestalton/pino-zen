@@ -157,7 +157,7 @@ function formatValue(name: string, value: any, dim: boolean): string {
                 line += openBracket;
                 let first = true;
                 for (const item of value) {
-                    if (!first) line += `${comma}`;
+                    if (!first) line += `${comma} `;
                     line += formatValue(undefined, item, dim);
                     first = false;
                 }
@@ -169,7 +169,7 @@ function formatValue(name: string, value: any, dim: boolean): string {
                 line += openBrace;
                 let first = true;
                 for (const key in value) {
-                    if (!first) line += ` `;
+                    if (!first) line += `  `;
                     line += formatValue(key, value[key], dim);
                     first = false;
                 }
