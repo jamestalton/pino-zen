@@ -99,16 +99,16 @@ if (!theme) theme = "dark";
 
 switch (theme) {
     case "dark":
-        trace = `${FgMagenta}${Dim}${trace}`;
+        trace = `${FgMagenta}${trace}`;
         debug = `${FgBlue}${debug}`;
         info = `${FgGreen}${info}`;
-        warn = `${FgYellow}${warn}`;
+        warn = `${Dim}${FgYellow}${warn}`;
         error = `${Bright}${FgRed}${error}`;
         fatal = `${FgRed}${Bright}${fatal}${Reset}`;
         Bold = Bright;
         reset = Reset;
         comma = `${Bright}${Dim}${FgBlack}${comma}${Reset}`;
-        colon = `${Bright}${FgBlack}${colon}${Reset}`;
+        colon = `${Bright}${Dim}${FgBlack}${colon}${Reset}`;
         openBrace = `${Bright}${FgBlack}${openBrace}${Reset}`;
         closeBrace = `${Bright}${FgBlack}${closeBrace}${Reset}`;
         openBracket = `${Bright}${FgBlack}${openBracket}${Reset}`;
@@ -136,41 +136,29 @@ switch (theme) {
         break;
 }
 
-function formatValue(name: string, value: any, dim: boolean): string {
+function formatValue(name: string, value: any): string {
     let line = `${variable}${name}${colon}`;
-    if (dim) {
-        line = `${Dim}${variable}${name}${Dim}${colon}`;
-    }
     if (!name) line = "";
     switch (typeof value) {
         default:
-            if (dim) {
-                line += Dim;
-            }
             line += value;
             break;
         case "object":
             if (Array.isArray(value)) {
-                if (dim) {
-                    line += Dim;
-                }
                 line += openBracket;
                 let first = true;
                 for (const item of value) {
                     if (!first) line += `${comma} `;
-                    line += formatValue(undefined, item, dim);
+                    line += formatValue(undefined, item);
                     first = false;
                 }
                 line += closeBracket;
             } else {
-                if (dim) {
-                    line += Dim;
-                }
                 line += openBrace;
                 let first = true;
                 for (const key in value) {
                     if (!first) line += `  `;
-                    line += formatValue(key, value[key], dim);
+                    line += formatValue(key, value[key]);
                     first = false;
                 }
                 line += closeBrace;
@@ -188,9 +176,9 @@ function formatPinoMessage(line: string): string {
             if (timestamp !== undefined) {
                 try {
                     const date = new Date(timestamp);
-                    line = `${defaultColor}${date.toLocaleDateString()} ${date.toLocaleTimeString()}${Reset} `;
+                    line = `${defaultColor}${Dim}${date.toLocaleDateString()} ${date.toLocaleTimeString()}${Reset} `;
                 } catch {
-                    line = `${defaultColor}${timestamp}${Reset} `;
+                    line = `${defaultColor}${Dim}${timestamp}${Reset} `;
                 }
             } else {
                 line = "";
@@ -200,12 +188,10 @@ function formatPinoMessage(line: string): string {
         }
 
         let bold = false;
-        let dim = false;
         switch (json[levelKey]) {
             case 10:
             case "trace":
                 line += trace;
-                dim = true;
                 break;
             case 20:
             case "debug":
@@ -236,8 +222,6 @@ function formatPinoMessage(line: string): string {
         if (typeof msg === "string") {
             if (bold) {
                 line += `${colon}${Bold}${msg}${reset}`;
-            } else if (dim) {
-                line += `${colon}${Dim}${msg}`;
             } else {
                 line += `${colon}${msg}`;
             }
@@ -250,7 +234,7 @@ function formatPinoMessage(line: string): string {
                 if (key === timestampKey) continue;
                 const value = json[key];
                 line += "  ";
-                line += formatValue(key, value, dim);
+                line += formatValue(key, value);
             }
         }
 
@@ -263,7 +247,7 @@ function formatPinoMessage(line: string): string {
             if (lastKeys?.[key]) continue;
             const value = json[key];
             line += "  ";
-            line += formatValue(key, value, dim);
+            line += formatValue(key, value);
         }
 
         if (lastKeys) {
@@ -273,7 +257,7 @@ function formatPinoMessage(line: string): string {
                 if (key === timestampKey) continue;
                 const value = json[key];
                 line += "  ";
-                line += formatValue(key, value, dim);
+                line += formatValue(key, value);
             }
         }
     } catch (err) {
