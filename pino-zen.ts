@@ -35,7 +35,7 @@ function getArg(name: string, short?: string) {
         return process.argv[index].substr(`--${name}=`.length);
     }
 
-    index = process.argv.findIndex((arg) => arg === `-${name}`);
+    index = process.argv.findIndex((arg) => arg === `--${name}`);
     if (index != -1) {
         if (process.argv.length >= index + 1) return process.argv[index + 1];
     }
@@ -46,7 +46,7 @@ function getArg(name: string, short?: string) {
             return process.argv[index].substr(`-${short}=`.length);
         }
 
-        index = process.argv.findIndex((arg) => arg === `--${short}`);
+        index = process.argv.findIndex((arg) => arg === `-${short}`);
         if (index != -1) {
             if (process.argv.length >= index + 1)
                 return process.argv[index + 1];
