@@ -11,7 +11,7 @@ Example Output
 ## Install
 
 ```sh
-npm install -g pino-zen
+npm install --save-dev pino-zen
 ```
 
 ## Usage
