@@ -318,6 +318,7 @@ process.stdin.on("data", (buffer: Buffer) => {
                         .split("\n")
                         .join("");
                     process.stdout.write(formatPinoMessage(objectString));
+                    start = i + 1;
                 }
             }
         }
