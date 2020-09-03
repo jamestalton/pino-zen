@@ -9,7 +9,7 @@ Clean and simple colored log formatting for viewing json logs.
 
 Example Output
 
-![example]([example.png](https://github.com/jamestalton/pino-zen/blob/master/example.png))
+![example](example.png)
 
 ## Install
 
