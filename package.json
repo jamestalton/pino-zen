@@ -6,7 +6,7 @@
         "pino-zen": "./pino-zen.js"
     },
     "scripts": {
-        "build": "tsc -t es2018 --moduleResolution node --removeComments pino-zen.ts",
+        "build": "tsc -t es6 --moduleResolution node --removeComments pino-zen.ts",
         "test": "cat test.json | node pino-zen"
     },
     "repository": {

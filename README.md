@@ -5,11 +5,11 @@ Zen for Pino logging
 Clean and simple colored log formatting for viewing json logs.
 
 [![NPM Package Version](https://img.shields.io/npm/jtalton/pino-zen)](https://www.npmjs.com/package/jtalton/pino-zen)
-[![Build Status](https://img.shields.io/github/workflow/status/jamestalton/pino-zen/CI)](https://github.com/jamestalton/pino-zen/actions?query=workflow%3ACI)
+[![Build Status](https://img.shields.io/github/workflow/status/jamestalton/pino-zen/CI)](https://github.com/jamestalton/pino-zen/actions?query=publish)
 
 Example Output
 
-![example](example.png)
+![example]([example.png](https://github.com/jamestalton/pino-zen/blob/master/example.png))
 
 ## Install
 
