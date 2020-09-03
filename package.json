@@ -1,12 +1,12 @@
 {
     "name": "pino-zen",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "description": "Zen for Pino logging",
     "bin": {
         "pino-zen": "./pino-zen.js"
     },
     "scripts": {
-        "build": "tsc -t es6 --moduleResolution node --removeComments pino-zen.ts",
+        "build": "tsc -t es2018 --moduleResolution node pino-zen.ts",
         "test": "cat test.json | node pino-zen"
     },
     "repository": {

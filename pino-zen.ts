@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const Reset = "\x1b[0m";
 const Bright = "\x1b[1m";
 const FgBlack = "\x1b[30m";
