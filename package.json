@@ -1,6 +1,6 @@
 {
     "name": "pino-zen",
-    "version": "1.0.12",
+    "version": "1.0.13",
     "description": "Zen for Pino logging",
     "bin": {
         "pino-zen": "./pino-zen.js"
