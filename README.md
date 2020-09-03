@@ -4,7 +4,7 @@ Zen for Pino logging
 
 Clean and simple colored log formatting for viewing json logs.
 
-Example Output
+Example of formatting output from a http server
 
 ![example](example.png)
 
