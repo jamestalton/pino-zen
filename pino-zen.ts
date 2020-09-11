@@ -269,49 +269,72 @@ function formatPinoMessage(line: string): string {
 }
 
 let data = "";
+let jsonString: string | undefined = undefined;
 let bracketOpen = 0;
 let parenOpen = false;
-let start = -1;
+let inArray = 0;
+
+function processLine(line: string) {
+    switch (line.trim()) {
+        case "":
+            return;
+        case "[":
+            inArray++;
+            return;
+        case ",":
+            if (inArray) {
+                return;
+            }
+        case "]":
+            if (inArray) {
+                inArray++;
+                return;
+            }
+    }
+    process.stdout.write(line + "\n");
+}
 
 process.stdin.on("data", (buffer: Buffer) => {
-    data += buffer
-        .toString()
-        .split("\n")
-        .map((line) => line.trim())
-        .join("");
-    let len = data.length;
-    for (let i = 0; i < len; i++) {
-        if (data[i] === '"') {
-            parenOpen = !parenOpen;
-            continue;
-        }
-
-        if (parenOpen) continue;
-
-        if (data[i] === "{") {
-            bracketOpen++;
-            if (bracketOpen === 1) {
+    data += buffer.toString();
+    const lines = data.split("\n");
+    for (let lineCount = lines.length, l = 0; l < lineCount - 1; l++) {
+        const line = lines[l];
+        let start = 0;
+        for (let lineLength = line.length, i = 0; i < lineLength; i++) {
+            if (bracketOpen) {
+                if (line[i] === '"') {
+                    parenOpen = !parenOpen;
+                    continue;
+                }
+                if (parenOpen) continue;
+                if (line[i] === "{") {
+                    bracketOpen++;
+                } else if (line[i] === "}") {
+                    bracketOpen--;
+                    if (bracketOpen === 0) {
+                        if (!jsonString)
+                            jsonString = line.substr(start, i - start + 1);
+                        else jsonString += line.substr(start, i - start + 1);
+                        process.stdout.write(formatPinoMessage(jsonString));
+                        jsonString = undefined;
+                        start = i + 1;
+                    }
+                }
+            } else if (line[i] === "{") {
+                bracketOpen++;
+                processLine(line.substr(0, start));
                 start = i;
             }
-        } else if (data[i] === "}") {
-            if (bracketOpen > 0) {
-                bracketOpen--;
-                if (bracketOpen === 0) {
-                    const objectString = data
-                        .substr(start, i - start + 1)
-                        .split("\n")
-                        .join("");
-                    process.stdout.write(formatPinoMessage(objectString));
-                    start = i + 1;
-                }
-            }
+        }
+
+        if (bracketOpen) {
+            if (!jsonString) jsonString = line.substr(start);
+            else jsonString += line.substr(start);
+        } else {
+            processLine(line.substr(start));
         }
     }
-
-    if (start > 0) {
-        data = data.substr(start);
-        start = 0;
-    }
+    data = lines[lines.length - 1];
 });
 
 process.once("SIGINT", () => {
