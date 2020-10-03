@@ -7,7 +7,7 @@ import { formatLine } from './format-line'
 process.stdin.on('data', (buffer: Buffer) => {
     const lines = buffer.toString().split('\n')
     for (const line of lines) {
-        process.stdout.write(formatLine(line))
+        process.stdout.write(formatLine(line) + '\n')
     }
 })
 
