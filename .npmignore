@@ -1,4 +1,6 @@
 /.github/
-test.json
+/coverage/
+/src/
+/test/
 example.png
-pino-zen.ts
+tsconfig.json
