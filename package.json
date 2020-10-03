@@ -20,7 +20,7 @@
     },
     "scripts": {
         "build": "rm -rf lib && tsc",
-        "test": "jest --verbose",
+        "test": "jest --verbose --color --ci",
         "lint": "eslint src test --ext .ts --max-warnings=0",
         "lint:fix": "eslint src test --ext .ts --fix",
         "check": "prettier --check **/*.ts **/*.json !coverage/** !lib/** !**/package-lock.json",
