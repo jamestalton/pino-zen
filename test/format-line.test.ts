@@ -5,7 +5,6 @@ describe('format-line', () => {
         expect(
             formatLine(
                 JSON.stringify({
-                    time: 0,
                     msg: 'msg',
                     name: 'name',
                     object: {
@@ -14,9 +13,7 @@ describe('format-line', () => {
                     },
                 })
             )
-        ).toMatchInlineSnapshot(
-            `"[2m12/31/1969 7:00:00 PM [22m[2m[90m:[39m[22mmsg  [36mname[39m[2m[90m:[39m[22mname  [36mobject[39m[2m[90m:[39m[22m[90m{ [39m[36mfirst[39m[2m[90m:[39m[22mfirst[2m[90m,[39m[22m [36marray[39m[2m[90m:[39m[22m[90m[ [39mstring[2m[90m,[39m[22m true[2m[90m,[39m[22m 123[90m ][39m[90m }[39m"`
-        )
+        ).toMatchInlineSnapshot(`"[2m[90m:[39m[22mmsg  [36mname[39m[2m[90m:[39m[22mname  [36mobject[39m[2m[90m:[39m[22m[90m{ [39m[36mfirst[39m[2m[90m:[39m[22mfirst[2m[90m,[39m[22m [36marray[39m[2m[90m:[39m[22m[90m[ [39mstring[2m[90m,[39m[22m true[2m[90m,[39m[22m 123[90m ][39m[90m }[39m"`)
     })
 
     it('should format trace json', () => {
