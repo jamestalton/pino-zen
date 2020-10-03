@@ -2,8 +2,21 @@
 
 import { Instance as Chalk } from 'chalk'
 import { program } from 'commander'
+import { readFileSync } from 'fs'
 
-const chalk = new Chalk()
+const packageJson = JSON.parse(readFileSync('package.json').toString()) as { version: string }
+program
+    .version(packageJson.version)
+    .option('-i, --ignore <keys>', 'ignore keys', '')
+    .option('-f, --first <keys>', 'first keys', '')
+    .option('-l, --last <keys>', 'last keys', '')
+    .option('--msg <key>', 'message key', 'msg')
+    .option('--level <key>', 'level key', 'level')
+    .option('--time <key>', 'time key', 'timestamp')
+    .option('--no-color', 'disable colors')
+    .parse(process.argv)
+
+const chalk = new Chalk({ level: program.color ? 2 : 0 })
 const traceText = chalk.magenta('TRACE')
 const debugText = chalk.blueBright('DEBUG')
 const infoText = chalk.greenBright(' INFO')
