@@ -14,7 +14,10 @@ program
     .option('--level <key>', 'level key', 'level')
     .option('--time <key>', 'time key', 'timestamp')
     .option('--no-color', 'disable colors')
-    .parse(process.argv)
+
+if (process.env.NODE_ENV !== 'test') {
+    program.parse(process.argv)
+}
 
 const chalk = new Chalk({ level: program.color ? 2 : 0 })
 const traceText = chalk.magenta('TRACE')
