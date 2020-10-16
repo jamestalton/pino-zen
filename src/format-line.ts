@@ -4,9 +4,7 @@ import { Instance as Chalk } from 'chalk'
 import { program } from 'commander'
 import { readFileSync } from 'fs'
 
-const packageJson = JSON.parse(readFileSync('package.json').toString()) as { version: string }
 program
-    .version(packageJson.version)
     .option('-i, --ignore <keys>', 'ignore keys', '')
     .option('-f, --first <keys>', 'first keys', '')
     .option('-l, --last <keys>', 'last keys', '')
