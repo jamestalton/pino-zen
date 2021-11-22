@@ -2,7 +2,6 @@
 
 import { Instance as Chalk } from 'chalk'
 import { program } from 'commander'
-import { readFileSync } from 'fs'
 
 program
     .option('-i, --ignore <keys>', 'ignore keys', '')
@@ -17,7 +16,9 @@ if (process.env.NODE_ENV !== 'test') {
     program.parse(process.argv)
 }
 
-const chalk = new Chalk({ level: program.color ? 2 : 0 })
+const options = program.opts()
+
+const chalk = new Chalk({ level: options.color ? 2 : 0 })
 const traceText = chalk.magenta('TRACE')
 const debugText = chalk.blueBright('DEBUG')
 const infoText = chalk.greenBright(' INFO')
@@ -31,13 +32,13 @@ const closeBrace = chalk.blackBright(' }')
 const openBracket = chalk.blackBright('[ ')
 const closeBracket = chalk.blackBright(' ]')
 
-let messageKey = program.msg as string
+let messageKey = options.msg as string
 if (!messageKey) messageKey = 'msg'
 
-let levelKey = program.level as string
+let levelKey = options.level as string
 if (!levelKey) levelKey = 'level'
 
-let timestampKey = program.time as string
+let timestampKey = options.time as string
 if (!timestampKey) timestampKey = 'time'
 
 function parseKeys(keys: string) {
@@ -48,9 +49,9 @@ function parseKeys(keys: string) {
     }, {} as Record<string, boolean>)
 }
 
-const ignoreKeys = parseKeys(program.ignore)
-const firstKeys = parseKeys(program.first)
-const lastKeys = parseKeys(program.last)
+const ignoreKeys = parseKeys(options.ignore)
+const firstKeys = parseKeys(options.first)
+const lastKeys = parseKeys(options.last)
 
 function formatValue(name: string, value: unknown): string {
     let line = chalk.cyan(name) + colon
