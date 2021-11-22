@@ -31,11 +31,12 @@
     "devDependencies": {
         "@types/jest": "^27.x.x",
         "@types/node": "^16.x.x",
-        "@typescript-eslint/eslint-plugin": "^4.2.0",
+        "@typescript-eslint/eslint-plugin": "^5.4.0",
         "@typescript-eslint/parser": "^5.4.0",
-        "eslint": "^7.9.0",
-        "eslint-config-prettier": "^6.11.0",
-        "eslint-plugin-prettier": "^3.1.4",
+        "eslint": "^8.3.0",
+        "eslint-config-prettier": "^8.3.0",
+        "eslint-plugin-jest": "^25.2.4",
+        "eslint-plugin-prettier": "^4.0.0",
         "jest": "^27.x.x",
         "prettier": "^2.4.1",
         "ts-jest": "^27.x.x",
@@ -61,10 +62,10 @@
         },
         "extends": [
             "eslint:recommended",
+            "plugin:jest/recommended",
             "plugin:@typescript-eslint/eslint-recommended",
             "plugin:@typescript-eslint/recommended",
             "plugin:@typescript-eslint/recommended-requiring-type-checking",
-            "prettier/@typescript-eslint",
             "plugin:prettier/recommended"
         ],
         "rules": {

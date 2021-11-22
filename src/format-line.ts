@@ -49,9 +49,9 @@ function parseKeys(keys: string) {
     }, {} as Record<string, boolean>)
 }
 
-const ignoreKeys = parseKeys(options.ignore)
-const firstKeys = parseKeys(options.first)
-const lastKeys = parseKeys(options.last)
+const ignoreKeys = parseKeys(options.ignore as string)
+const firstKeys = parseKeys(options.first as string)
+const lastKeys = parseKeys(options.last as string)
 
 function formatValue(name: string, value: unknown): string {
     let line = chalk.cyan(name) + colon
