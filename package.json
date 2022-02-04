@@ -19,9 +19,9 @@
         "type": "git",
         "url": "git+ssh://git@github.com/jamestalton/pino-zen.git"
     },
-    "main": "./lib/pino-zen.js",
+    "main": "./lib/pino-zen.mjs",
     "bin": {
-        "pino-zen": "./lib/pino-zen-cli.js"
+        "pino-zen": "./lib/pino-zen-cli.mjs"
     },
     "scripts": {
         "start": "npm run build && cat test.txt | node lib/pino-zen-cli.mjs",
