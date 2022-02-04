@@ -1,9 +1,10 @@
 {
     "name": "pino-zen",
-    "version": "1.0.20",
+    "version": "2.0.0",
     "description": "Zen for Pino logging",
     "author": "James Talton <talton@gmail.com>",
     "license": "MIT",
+    "type": "module",
     "homepage": "https://github.com/jamestalton/pino-zen#readme",
     "bugs": {
         "url": "https://github.com/jamestalton/pino-zen/issues"
@@ -11,38 +12,42 @@
     "keywords": [
         "pino"
     ],
+    "files": [
+        "lib"
+    ],
     "repository": {
         "type": "git",
         "url": "git+ssh://git@github.com/jamestalton/pino-zen.git"
     },
+    "main": "./lib/pino-zen.js",
     "bin": {
-        "pino-zen": "./lib/pino-zen.js"
+        "pino-zen": "./lib/pino-zen-cli.js"
     },
     "scripts": {
-        "build": "rm -rf lib && tsc",
-        "test": "npm run jest && npm run lint && npm run check",
-        "jest": "jest --verbose --color --ci",
-        "lint": "eslint src test --ext .ts --max-warnings=0",
-        "lint:fix": "eslint src test --ext .ts --fix",
-        "check": "prettier --check **/*.ts **/*.json !coverage/** !lib/** !**/package-lock.json",
-        "check:fix": "prettier --write **/*.ts **/*.json !coverage/** !lib/** !**/package-lock.json",
-        "update": "rm -rf package-lock.json node_modules && npx npm-check-updates -u && npm install && npm audit fix && npm test && npm run lint && npm run check"
+        "start": "npm run build && cat test.txt | node lib/pino-zen-cli.mjs",
+        "build": "rm -f lib/* && tsc && npx rollup --format es --file lib/pino-zen.mjs -- lib/pino-zen.js && npx rollup --format es --file lib/pino-zen-cli.mjs -- lib/pino-zen-cli.js && rm -rf lib/*.js",
+        "test": "npm run jest && npm run eslint && npm run prettier",
+        "eslint": "eslint src",
+        "eslint:fix": "eslint src",
+        "prettier": "prettier --check src",
+        "prettier:fix": "prettier --write src"
+    },
+    "dependencies": {
+        "pino-abstract-transport": "^0.5.0",
+        "sonic-boom": "^2.6.0",
+        "split2": "^4.1.0"
     },
     "devDependencies": {
-        "@types/jest": "^27.x.x",
-        "@types/node": "^16.x.x",
-        "@typescript-eslint/eslint-plugin": "^5.4.0",
-        "@typescript-eslint/parser": "^5.4.0",
-        "eslint": "^8.3.0",
+        "@types/node": "^17.x.x",
+        "@types/split2": "^3.2.1",
+        "@typescript-eslint/eslint-plugin": "^5.10.2",
+        "@typescript-eslint/parser": "^5.10.2",
+        "eslint": "^8.8.0",
         "eslint-config-prettier": "^8.3.0",
-        "eslint-plugin-jest": "^25.2.4",
         "eslint-plugin-prettier": "^4.0.0",
-        "jest": "^27.x.x",
-        "prettier": "^2.4.1",
-        "ts-jest": "^27.x.x",
+        "prettier": "^2.5.1",
         "ts-node": "^10.4.0",
-        "ts-node-dev": "^1.1.8",
-        "typescript": "^4.5.2"
+        "typescript": "^4.5.5"
     },
     "prettier": {
         "printWidth": 120,
@@ -80,45 +85,5 @@
             "no-console": "error",
             "no-process-exit": "error"
         }
-    },
-    "jest": {
-        "testEnvironment": "node",
-        "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-        "collectCoverage": true,
-        "coverageThreshold": {
-            "global": {
-                "branches": 0,
-                "functions": 0,
-                "lines": 0,
-                "statements": 0
-            }
-        },
-        "coverageReporters": [
-            "text",
-            "text-summary",
-            "html"
-        ],
-        "collectCoverageFrom": [
-            "src/**/*.ts",
-            "!**/node_modules/**",
-            "!<rootDir>/src/typings.d.ts"
-        ],
-        "moduleFileExtensions": [
-            "js",
-            "json",
-            "jsx",
-            "node",
-            "ts",
-            "tsx"
-        ],
-        "setupFiles": [
-            "<rootDir>/test/jest.ts"
-        ],
-        "preset": "ts-jest",
-        "testMatch": null
-    },
-    "dependencies": {
-        "chalk": "^4.1.2",
-        "commander": "^8.3.0"
     }
 }
