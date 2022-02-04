@@ -25,8 +25,8 @@
     },
     "scripts": {
         "start": "npm run build && cat test.txt | node lib/pino-zen-cli.mjs",
-        "build": "rm -f lib/* && tsc && npx rollup --format es --file lib/pino-zen.mjs -- lib/pino-zen.js && npx rollup --format es --file lib/pino-zen-cli.mjs -- lib/pino-zen-cli.js && rm -rf lib/*.js",
-        "test": "npm run jest && npm run eslint && npm run prettier",
+        "build": "rm -f lib/* && tsc && npx rollup --format es --file lib/pino-zen.mjs -- lib/pino-zen.js && npx rollup --format es --file lib/pino-zen-cli.js -- lib/pino-zen-cli.js && echo '#!/usr/bin/env node' > ./lib/pino-zen-cli.mjs && cat ./lib/pino-zen-cli.js >> ./lib/pino-zen-cli.mjs && rm -f lib/*.js && chmod +x ./lib/pino-zen-cli.mjs",
+        "test": "npm run eslint && npm run prettier",
         "eslint": "eslint src",
         "eslint:fix": "eslint src",
         "prettier": "prettier --check src",
@@ -67,7 +67,6 @@
         },
         "extends": [
             "eslint:recommended",
-            "plugin:jest/recommended",
             "plugin:@typescript-eslint/eslint-recommended",
             "plugin:@typescript-eslint/recommended",
             "plugin:@typescript-eslint/recommended-requiring-type-checking",

@@ -11,7 +11,19 @@ const Cyan = '\x1b[36m'
 const White = '\x1b[37m'
 const Gray = '\x1b[90m'
 
-export function FormatMessage(message: unknown, opts: { mins?: Record<string, number> }): string {
+const Trace = Magenta + 'TRACE'
+const Debug = Blue + 'DEBUG'
+const Info = Bold + Green + ' INFO'
+const Warn = Yellow + ' WARN'
+const Error = Bold + Red + 'ERROR'
+const Fatal = Bold + Red + 'FATAL'
+
+export interface PinoZenOptions {
+    destination?: string | number
+    minWidths?: Record<string, number>
+}
+
+export function FormatMessage(message: unknown, opts: PinoZenOptions): string {
     if (typeof message === 'string') {
         return message + '\n'
     }
@@ -25,44 +37,71 @@ export function FormatMessage(message: unknown, opts: { mins?: Record<string, nu
     const level = (message as Record<string, unknown>).level
     const msg = (message as Record<string, unknown>).msg
 
-    let dim = false
     switch (level) {
         case 10:
         case 'trace':
-            dim = true
-            line += Dim + Magenta + 'TRACE  ' + Normal
+            line += Trace
             break
         case 20:
         case 'debug':
-            dim = true
-            line += Dim + Blue + 'DEBUG  ' + Normal
+            line += Debug
+            line += Bold
             break
         case 30:
         case 'info':
-            line += Green + ' INFO  '
+            line += Info
             break
         case 40:
         case 'warn':
-            dim = true
-            line += Dim + Yellow + ' WARN  ' + Normal
+            line += Warn
+            line += Bold
             break
         case 50:
         case 'error':
-            line += Bold + Red + 'ERROR  ' + Normal
+            line += Error
             break
         case 60:
         case 'fatal':
-            line += Red + 'FATAL  '
+            line += Fatal
+            break
+        default:
+            line += '     '
             break
     }
+
+    switch (level) {
+        case 10:
+        case 'trace':
+        case 20:
+        case 'debug':
+        case 40:
+        case 'warn':
+            line += Dim
+            break
+
+        default:
+            line += Bold
+            break
+    }
+
     if (typeof msg === 'string') {
-        if (dim) {
-            if (typeof opts.mins?.msg !== 'number') line += Normal + Gray + msg + Normal
-            else line += Normal + Gray + msg.padStart(opts.mins?.msg, ' ') + Normal
-        } else {
-            if (typeof opts.mins?.msg !== 'number') line += Normal + Bold + White + msg + Normal
-            else line += Normal + Bold + White + msg.padStart(opts.mins?.msg, ' ') + Normal
-        }
+        if (typeof opts.minWidths?.msg !== 'number') line += '  ' + White + msg
+        else line += '  ' + White + msg.padStart(opts.minWidths.msg, ' ')
+    }
+
+    switch (level) {
+        case 10:
+        case 'trace':
+        case 20:
+        case 'debug':
+        case 40:
+        case 'warn':
+            line += Normal
+            line += Dim
+            break
+        default:
+            line += Normal
+            break
     }
 
     for (const key in message) {
@@ -73,7 +112,7 @@ export function FormatMessage(message: unknown, opts: { mins?: Record<string, nu
                 break
             default: {
                 const value = (message as Record<string, unknown>)[key]
-                line += formatValue(key, value, true, dim)
+                line += formatValue(key, value, true, opts)
                 break
             }
         }
@@ -81,48 +120,34 @@ export function FormatMessage(message: unknown, opts: { mins?: Record<string, nu
     return line + Reset
 }
 
-function formatValue(key: string | undefined, value: unknown, prefix: boolean, dim: boolean) {
+function formatValue(key: string | undefined, value: unknown, prefix: boolean, opts: PinoZenOptions) {
     let line = prefix ? '  ' : ''
     let first = true
     switch (typeof value) {
         case 'string':
-        case 'number':
         case 'boolean':
-            if (key) {
-                if (value === '') line += Cyan + key
-                else {
-                    if (dim) line += Dim + Cyan + key + Gray + ':' + Normal + value.toString()
-                    else line += Cyan + key + Dim + Gray + ':' + Normal + White + value.toString()
-                }
-            } else {
-                if (value !== '') {
-                    if (dim) line += value.toString()
-                    else line += White + value.toString()
-                }
-            }
-            break
-        case 'undefined':
-            if (dim) line += Dim + Cyan + key + Normal
-            else line += Cyan + key
+        case 'number':
+            if (key) line += Cyan + key + ' '
+            if (typeof opts.minWidths?.[key] !== 'number') line += White + value.toString()
+            else line += White + value.toString().padEnd(opts.minWidths[key], ' ')
             break
         case 'object':
+            if (key) line += Cyan + key + ' '
             if (Array.isArray(value)) {
-                if (dim) line += Dim + Cyan + key + Gray + ':' + Normal + '[ ' + Normal
-                else line += Bold + Cyan + key + Normal + Dim + Gray + ':' + Normal + '[ ' + Normal
+                line += Gray + ' [ '
                 for (const value2 of value) {
-                    line += formatValue(undefined, value2, !first, dim)
+                    line += formatValue(undefined, value2, !first, opts)
                     first = false
                 }
-                line += Gray + ' ]' + Normal
+                line += Gray + ' ]'
             } else {
-                if (dim) line += Dim + Cyan + key + Gray + ':' + Normal + '{ ' + Normal
-                else line += Bold + Cyan + key + Normal + Dim + Gray + ':' + Normal + '{ ' + Normal
+                line += Gray + ' { '
                 for (const key in value) {
                     const value2 = (value as Record<string, unknown>)[key]
-                    line += formatValue(key, value2, !first, dim)
+                    line += formatValue(key, value2, !first, opts)
                     first = false
                 }
-                line += Gray + ' }' + Normal
+                line += Gray + ' }'
             }
             break
     }
