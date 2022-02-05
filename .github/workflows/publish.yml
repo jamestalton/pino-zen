@@ -1,55 +1,39 @@
-name: Publish
-
+name: NPM Publish
 on:
-    push:
-        branches: [master]
-
+    workflow_dispatch:
+        inputs:
+            versionIncrement:
+                description: 'Version Increment'
+                required: true
+                default: 'patch'
+                type: choice
+                options:
+                    - major
+                    - minor
+                    - patch
 jobs:
-    publish:
+    npm-publish:
         runs-on: ubuntu-latest
-
         steps:
             - uses: actions/checkout@v2
-
-            - name: Set up Node.js 12.x
-              uses: actions/setup-node@v1
               with:
-                  node-version: 12.x
+                  token: ${{ secrets.GH_TOKEN }}
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: '14'
                   registry-url: https://registry.npmjs.org/
-
-            - name: Install Dependencies
-              run: npm ci
-
-            - name: Test
-              run: npm test
-
-            - name: Lint
-              run: npm run lint
-
-            - name: Check
-              run: npm run check
-
-            - name: Build
-              run: npm run build
-
-            - name: Set up Git
+                  cache: 'npm'
+            - name: npm version ${{ github.event.inputs.versionIncrement }}
               run: |
-                  git config --global user.name "${GITHUB_ACTOR}"
-                  git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-
-            - name: Update Version
-              run: |
-                  npm version patch
-                  VERSION=v`cat package.json | jq -r .version`
-                  echo "::set-env name=VERSION::${VERSION}"
-
-            - name: Git Push Release
-              if: github.event_name != 'pull_request' && env.SKIP != '1'
-              run: |
-                  git push
-                  git push origin ${{ env.VERSION }}
-
-            - name: Publish
-              run: npm publish
+                  TAG=$(npm version ${{ github.event.inputs.versionIncrement }} --no-git-tag-version)
+                  echo "TAG=$(echo $TAG)" >> $GITHUB_ENV
+            - run: npm ci
+            - run: npm run build
+            - uses: EndBug/add-and-commit@v7
+              with:
+                  default_author: github_actions
+                  message: Release ${{ env.TAG }}
+                  tag: ${{ env.TAG }}
+            - run: npm publish
               env:
-                  NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
