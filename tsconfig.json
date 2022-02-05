@@ -1,7 +1,9 @@
 {
     "compilerOptions": {
-        "target": "ES2019",
-        "module": "commonjs",
+        "target": "ES2020",
+        "module": "ES2020",
+        "lib": ["ES2020"],
+        "allowSyntheticDefaultImports": true,
         "allowJs": false,
         "sourceMap": false,
         "declaration": false,
@@ -14,7 +16,11 @@
         "outDir": "./lib",
         "noImplicitUseStrict": true,
         "removeComments": true,
-        "lib": ["ES2019"]
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "isolatedModules": true
     },
-    "include": ["src/**/*.ts"]
+    "include": ["src"]
 }
