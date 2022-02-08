@@ -2,14 +2,14 @@ const Reset = '\x1b[0m'
 const Dim = '\x1b[2m'
 const Bold = '\x1b[1m'
 const Normal = '\x1b[22m'
-const Red = '\x1b[31m'
-const Green = '\x1b[32m'
-const Yellow = '\x1b[33m'
-const Blue = '\x1b[34m'
-const Magenta = '\x1b[35m'
-const Cyan = '\x1b[36m'
-const White = '\x1b[37m'
-const Gray = '\x1b[90m'
+export const Red = '\x1b[31m'
+export const Green = '\x1b[32m'
+export const Yellow = '\x1b[33m'
+export const Blue = '\x1b[34m'
+export const Magenta = '\x1b[35m'
+export const Cyan = '\x1b[36m'
+export const White = '\x1b[37m'
+export const Gray = '\x1b[90m'
 
 const Trace = Magenta + 'TRACE'
 const Debug = Blue + 'DEBUG'
@@ -20,23 +20,22 @@ const Fatal = Bold + Red + 'FATAL'
 
 export interface PinoZenOptions {
     destination?: string | number
-    minWidths?: Record<string, number>
+    formatter?: Record<string, false | StringFormatter>
+}
+
+export interface StringFormatter {
+    padStart: number
+    padEnd: number
 }
 
 export function FormatMessage(message: unknown, opts: PinoZenOptions): string {
     if (typeof message === 'string') {
-        return message + '\n'
-    }
-
-    if (typeof message !== 'object') {
-        return '\n'
+        return message
     }
 
     let line = ''
 
     const level = (message as Record<string, unknown>).level
-    const msg = (message as Record<string, unknown>).msg
-
     switch (level) {
         case 10:
         case 'trace':
@@ -78,15 +77,19 @@ export function FormatMessage(message: unknown, opts: PinoZenOptions): string {
         case 'warn':
             line += Dim
             break
-
         default:
             line += Bold
             break
     }
 
+    let msg = (message as Record<string, unknown>).msg
     if (typeof msg === 'string') {
-        if (typeof opts.minWidths?.msg !== 'number') line += '  ' + White + msg
-        else line += '  ' + White + msg.padStart(opts.minWidths.msg, ' ')
+        const msgFormatter = opts.formatter?.msg
+        if (msgFormatter !== false) {
+            if (typeof msgFormatter?.padStart === 'number') msg = msg.padStart(msgFormatter.padStart, ' ')
+            if (typeof msgFormatter?.padEnd === 'number') msg = (msg as string).padEnd(msgFormatter.padEnd, ' ')
+            line += '  ' + White + (msg as string)
+        }
     }
 
     switch (level) {
@@ -104,7 +107,7 @@ export function FormatMessage(message: unknown, opts: PinoZenOptions): string {
             break
     }
 
-    for (const key in message) {
+    for (const key in message as Record<string, unknown>) {
         switch (key) {
             case 'msg':
             case 'time':
@@ -123,16 +126,33 @@ export function FormatMessage(message: unknown, opts: PinoZenOptions): string {
 function formatValue(key: string | undefined, value: unknown, prefix: boolean, opts: PinoZenOptions) {
     let line = prefix ? '  ' : ''
     let first = true
-    switch (typeof value) {
+
+    if (opts.formatter?.key === false) return
+
+    const msgFormatter = opts.formatter?.[key]
+    if (msgFormatter !== false) {
+        if (typeof msgFormatter?.padStart === 'number') value = value.toString().padStart(msgFormatter.padStart, ' ')
+        if (typeof msgFormatter?.padEnd === 'number') value = value.toString().padEnd(msgFormatter.padEnd, ' ')
+    }
+
+    const valueType = typeof value
+
+    switch (valueType) {
         case 'string':
         case 'boolean':
         case 'number':
-            if (key) line += Cyan + key + ' '
-            if (typeof opts.minWidths?.[key] !== 'number') line += White + value.toString()
-            else line += White + value.toString().padEnd(opts.minWidths[key], ' ')
-            break
         case 'object':
             if (key) line += Cyan + key + ' '
+            break
+    }
+
+    switch (valueType) {
+        case 'string':
+        case 'boolean':
+        case 'number':
+            line += White + value.toString()
+            break
+        case 'object':
             if (Array.isArray(value)) {
                 line += Gray + ' [ '
                 for (const value2 of value) {
@@ -142,7 +162,7 @@ function formatValue(key: string | undefined, value: unknown, prefix: boolean, o
                 line += Gray + ' ]'
             } else {
                 line += Gray + ' { '
-                for (const key in value) {
+                for (const key in value as object) {
                     const value2 = (value as Record<string, unknown>)[key]
                     line += formatValue(key, value2, !first, opts)
                     first = false

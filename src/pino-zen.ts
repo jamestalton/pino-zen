@@ -4,6 +4,7 @@ import SonicBoom from 'sonic-boom'
 import { Transform } from 'stream'
 import { FormatMessage, PinoZenOptions } from './pino-zen-format'
 
+export * from './pino-zen-format'
 export default async function (opts: PinoZenOptions) {
     const destination = new SonicBoom({ dest: opts.destination || 1, sync: false })
     await once(destination, 'ready')

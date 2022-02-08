@@ -6,7 +6,7 @@
         "allowSyntheticDefaultImports": true,
         "allowJs": false,
         "sourceMap": false,
-        "declaration": false,
+        "declaration": true,
         "alwaysStrict": false,
         "noUnusedLocals": false,
         "noUnusedParameters": false,

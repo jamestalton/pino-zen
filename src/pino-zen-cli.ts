@@ -9,13 +9,12 @@ const myTransportStream = new Writable({
         try {
             const obj = JSON.parse(chunk.toString()) as unknown
             value = FormatMessage(obj, {})
-        } catch {
+        } catch (err) {
             value = chunk.toString()
         }
         if (!process.stdout.write(value + '\n')) {
             await once(process.stdout, 'drain')
         }
-
         cb()
     },
 })

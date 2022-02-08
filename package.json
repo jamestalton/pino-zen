@@ -20,12 +20,17 @@
         "url": "git+ssh://git@github.com/jamestalton/pino-zen.git"
     },
     "main": "./lib/pino-zen.mjs",
+    "types": "./lib/pino-zen.d.ts",
     "bin": {
         "pino-zen": "./lib/pino-zen-cli.mjs"
     },
     "scripts": {
         "start": "npm run build && cat test.txt | node lib/pino-zen-cli.mjs",
-        "build": "rm -f lib/* && tsc && npx rollup --format es --file lib/pino-zen.mjs -- lib/pino-zen.js && npx rollup --format es --file lib/pino-zen-cli.js -- lib/pino-zen-cli.js && echo '#!/usr/bin/env node' > ./lib/pino-zen-cli.mjs && cat ./lib/pino-zen-cli.js >> ./lib/pino-zen-cli.mjs && rm -f lib/*.js && chmod +x ./lib/pino-zen-cli.mjs",
+        "build": "rm -f lib/* && tsc && npm run build-mjs && npm run build-cli && rm lib/*.js",
+        "build-mjs": "npx rollup --format es --file lib/pino-zen.mjs -- lib/pino-zen.js",
+        "build-cli": "npx rollup --format es --file lib/pino-zen-cli.js -- lib/pino-zen-cli.js && echo '#!/usr/bin/env node' > ./lib/pino-zen-cli.mjs && cat ./lib/pino-zen-cli.js >> ./lib/pino-zen-cli.mjs",
+        "build2": "rm -f lib/* && tsc && npx rollup --format es --file lib/pino-zen.mjs -- lib/pino-zen.js && npx rollup --format es --file lib/pino-zen-cli.js -- lib/pino-zen-cli.js && echo '#!/usr/bin/env node' > ./lib/pino-zen-cli.mjs && cat ./lib/pino-zen-cli.js >> ./lib/pino-zen-cli.mjs && rm -f lib/*.js && chmod +x ./lib/pino-zen-cli.mjs",
+        "build-2": "echo '#!/usr/bin/env node' > ./lib/pino-zen-cli.mjs && cat ./lib/pino-zen-cli.js >> ./lib/pino-zen-cli.mjs && rm -f lib/*.js && chmod +x ./lib/pino-zen-cli.mjs",
         "test": "npm run eslint && npm run prettier",
         "eslint": "eslint src",
         "eslint:fix": "eslint src",
