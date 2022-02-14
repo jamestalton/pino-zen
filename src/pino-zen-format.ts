@@ -10,13 +10,16 @@ export const Magenta = '\x1b[35m'
 export const Cyan = '\x1b[36m'
 export const White = '\x1b[37m'
 export const Gray = '\x1b[90m'
+export const Black = '\x1b[30m'
 
-const Trace = Magenta + 'TRACE'
-const Debug = Blue + 'DEBUG'
-const Info = Bold + Green + ' INFO'
-const Warn = Yellow + ' WARN'
-const Error = Bold + Red + 'ERROR'
-const Fatal = Bold + Red + 'FATAL'
+const BgRed = '\x1b[41m'
+
+const Trace = Bold + Magenta
+const Debug = Bold + Blue
+const Info = Bold + Green
+const Warn = Yellow
+const Error = Bold + Red
+const Fatal = BgRed + Black
 
 export interface PinoZenOptions {
     destination?: string | number
@@ -24,8 +27,8 @@ export interface PinoZenOptions {
 }
 
 export interface StringFormatter {
-    padStart: number
-    padEnd: number
+    padStart?: number
+    padEnd?: number
 }
 
 export function FormatMessage(message: unknown, opts: PinoZenOptions): string {
@@ -44,7 +47,6 @@ export function FormatMessage(message: unknown, opts: PinoZenOptions): string {
         case 20:
         case 'debug':
             line += Debug
-            line += Bold
             break
         case 30:
         case 'info':
@@ -53,7 +55,6 @@ export function FormatMessage(message: unknown, opts: PinoZenOptions): string {
         case 40:
         case 'warn':
             line += Warn
-            line += Bold
             break
         case 50:
         case 'error':
@@ -63,23 +64,6 @@ export function FormatMessage(message: unknown, opts: PinoZenOptions): string {
         case 'fatal':
             line += Fatal
             break
-        default:
-            line += '     '
-            break
-    }
-
-    switch (level) {
-        case 10:
-        case 'trace':
-        case 20:
-        case 'debug':
-        case 40:
-        case 'warn':
-            line += Dim
-            break
-        default:
-            line += Bold
-            break
     }
 
     let msg = (message as Record<string, unknown>).msg
@@ -88,26 +72,14 @@ export function FormatMessage(message: unknown, opts: PinoZenOptions): string {
         if (msgFormatter !== false) {
             if (typeof msgFormatter?.padStart === 'number') msg = msg.padStart(msgFormatter.padStart, ' ')
             if (typeof msgFormatter?.padEnd === 'number') msg = (msg as string).padEnd(msgFormatter.padEnd, ' ')
-            line += '  ' + White + (msg as string)
+            line += msg as string
         }
     }
 
-    switch (level) {
-        case 10:
-        case 'trace':
-        case 20:
-        case 'debug':
-        case 40:
-        case 'warn':
-            line += Normal
-            line += Dim
-            break
-        default:
-            line += Normal
-            break
-    }
+    line += Reset
 
     for (const key in message as Record<string, unknown>) {
+        let first = !!msg
         switch (key) {
             case 'msg':
             case 'time':
@@ -115,7 +87,8 @@ export function FormatMessage(message: unknown, opts: PinoZenOptions): string {
                 break
             default: {
                 const value = (message as Record<string, unknown>)[key]
-                line += formatValue(key, value, true, opts)
+                line += formatValue(key, value, first, opts)
+                first = false
                 break
             }
         }
@@ -154,14 +127,14 @@ function formatValue(key: string | undefined, value: unknown, prefix: boolean, o
             break
         case 'object':
             if (Array.isArray(value)) {
-                line += Gray + ' [ '
+                line += Gray + '[ '
                 for (const value2 of value) {
                     line += formatValue(undefined, value2, !first, opts)
                     first = false
                 }
                 line += Gray + ' ]'
             } else {
-                line += Gray + ' { '
+                line += Gray + '{ '
                 for (const key in value as object) {
                     const value2 = (value as Record<string, unknown>)[key]
                     line += formatValue(key, value2, !first, opts)

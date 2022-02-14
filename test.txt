@@ -1,8 +1,9 @@
-{ "level": "trace", "msg": "This is a trace", "number": 1, "string": "hello", "boolean": true, "object": { "abc":123}, "array": [123,456] }
-{ "level": "debug", "msg": "This is a debug" , "number": 1, "string": "hello", "boolean": false, "object": { "abc":123}, "array": [123,456] }
-{ "level": "info", "msg": "This is an info" , "number": 1, "string": "hello", "boolean": true, "object": { "abc":123}, "array": [123,456] }
-{ "level": "warn", "msg": "This is a warning" , "number": 1, "string": "hello", "boolean": true, "object": { "abc":123}, "array": [123,456] }
-{ "level": "error", "msg": "This is an error" , "number": 1, "string": "hello", "boolean": false, "object": { "abc":123}, "array": [123,456] }
+{ "level": "trace", "msg": "This is a trace msg", "number": 1, "string": "hello", "boolean": true, "object": { "abc":123}, "array": [123,456] }
+{ "level": "debug", "msg": "This is a debug msg" , "number": 1, "string": "hello", "boolean": false, "object": { "abc":123}, "array": [123,456] }
+{ "level": "info", "msg": "This is an info msg" , "number": 1, "string": "hello", "boolean": true, "object": { "abc":123}, "array": [123,456] }
+{ "level": "warn", "msg": "This is a warning msg" , "number": 1, "string": "hello", "boolean": true, "object": { "abc":123}, "array": [123,456] }
+{ "level": "error", "msg": "This is an error msg" , "number": 1, "string": "hello", "boolean": false, "object": { "abc":123}, "array": [123,456] }
+{ "level": "fatal", "msg": "This is a fatal msg" , "number": 1, "string": "hello", "boolean": false, "object": { "abc":123}, "array": [123,456] }
 { "level": "info", "object": { "abc": 123, "def": 456 } }
 { "level": "info", "array": [123,456] }
 { "msg": "no level" }
