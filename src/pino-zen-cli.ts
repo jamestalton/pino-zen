@@ -1,4 +1,5 @@
 import { once } from 'events'
+import { fstatSync } from 'fs'
 import split2 from 'split2'
 import { pipeline, Writable } from 'stream'
 import { FormatMessage } from './pino-zen-format'
@@ -23,3 +24,11 @@ const myTransportStream = new Writable({
 pipeline(process.stdin, split2(), myTransportStream, (err) => {
     // Do nothing
 })
+
+if (!process.stdin.isTTY && !fstatSync(process.stdin.fd).isFile()) {
+    process.once('SIGINT', noop)
+}
+
+function noop() {
+    /***/
+}
