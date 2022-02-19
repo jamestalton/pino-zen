@@ -66,6 +66,49 @@ export function FormatMessage(message: unknown, opts: PinoZenOptions): string {
             break
     }
 
+    let cat = (message as Record<string, unknown>).cat
+    let hasCategory = false
+    if (typeof cat === 'string') {
+        hasCategory = true
+        const msgFormatter = opts.formatter?.cat
+        if (msgFormatter !== false) {
+            if (typeof msgFormatter?.padStart === 'number') cat = cat.padStart(msgFormatter.padStart, ' ')
+            if (typeof msgFormatter?.padEnd === 'number') cat = (cat as string).padEnd(msgFormatter.padEnd, ' ')
+        }
+        line += cat
+    }
+
+    if (!hasCategory) {
+        switch (level) {
+            case 10:
+            case 'trace':
+                line += 'TRACE'
+                break
+            case 20:
+            case 'debug':
+                line += 'DEBUG'
+                break
+            case 30:
+            case 'info':
+                line += ' INFO'
+                break
+            case 40:
+            case 'warn':
+                line += ' WARN'
+                break
+            case 50:
+            case 'error':
+                line += 'ERROR'
+                break
+            case 60:
+            case 'fatal':
+                line += 'FATAL'
+                break
+        }
+    }
+
+    line += Reset + White + Bold + ' '
+
     let msg = (message as Record<string, unknown>).msg
     if (typeof msg === 'string') {
         const msgFormatter = opts.formatter?.msg
@@ -81,6 +124,7 @@ export function FormatMessage(message: unknown, opts: PinoZenOptions): string {
     for (const key in message as Record<string, unknown>) {
         let first = !!msg
         switch (key) {
+            case 'cat':
             case 'msg':
             case 'time':
             case 'level':
@@ -115,7 +159,12 @@ function formatValue(key: string | undefined, value: unknown, prefix: boolean, o
         case 'boolean':
         case 'number':
         case 'object':
-            if (key) line += Cyan + key + ' '
+            if (key)
+                if (value === null) {
+                    line += Cyan + key
+                } else {
+                    line += Cyan + key + ' '
+                }
             break
     }
 
@@ -133,6 +182,8 @@ function formatValue(key: string | undefined, value: unknown, prefix: boolean, o
                     first = false
                 }
                 line += Gray + ' ]'
+            } else if (value === null) {
+                // Do nothing
             } else {
                 line += Gray + '{ '
                 for (const key in value as object) {
