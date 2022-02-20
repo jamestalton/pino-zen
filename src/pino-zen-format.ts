@@ -29,6 +29,8 @@ export interface PinoZenOptions {
 export interface StringFormatter {
     padStart?: number
     padEnd?: number
+    error?: boolean
+    dim?: boolean
 }
 
 export function FormatMessage(message: unknown, opts: PinoZenOptions): string {
@@ -66,16 +68,11 @@ export function FormatMessage(message: unknown, opts: PinoZenOptions): string {
             break
     }
 
-    let cat = (message as Record<string, unknown>).cat
+    const cat = (message as Record<string, unknown>).cat
     let hasCategory = false
-    if (typeof cat === 'string') {
+    if (cat !== undefined) {
         hasCategory = true
-        const msgFormatter = opts.formatter?.cat
-        if (msgFormatter !== false) {
-            if (typeof msgFormatter?.padStart === 'number') cat = cat.padStart(msgFormatter.padStart, ' ')
-            if (typeof msgFormatter?.padEnd === 'number') cat = (cat as string).padEnd(msgFormatter.padEnd, ' ')
-        }
-        line += cat
+        line += formatValueOptions(cat, opts.formatter?.cat)
     }
 
     if (!hasCategory) {
@@ -109,15 +106,8 @@ export function FormatMessage(message: unknown, opts: PinoZenOptions): string {
 
     line += Reset + White + Bold + ' '
 
-    let msg = (message as Record<string, unknown>).msg
-    if (typeof msg === 'string') {
-        const msgFormatter = opts.formatter?.msg
-        if (msgFormatter !== false) {
-            if (typeof msgFormatter?.padStart === 'number') msg = msg.padStart(msgFormatter.padStart, ' ')
-            if (typeof msgFormatter?.padEnd === 'number') msg = (msg as string).padEnd(msgFormatter.padEnd, ' ')
-            line += msg as string
-        }
-    }
+    const msg = (message as Record<string, unknown>).msg
+    line += formatValueOptions(msg, opts.formatter?.msg)
 
     line += Reset
 
@@ -141,19 +131,14 @@ export function FormatMessage(message: unknown, opts: PinoZenOptions): string {
 }
 
 function formatValue(key: string | undefined, value: unknown, prefix: boolean, opts: PinoZenOptions) {
-    let line = prefix ? '  ' : ''
-    let first = true
-
     if (opts.formatter?.key === false) return
 
-    const msgFormatter = opts.formatter?.[key]
-    if (msgFormatter !== false) {
-        if (typeof msgFormatter?.padStart === 'number') value = value.toString().padStart(msgFormatter.padStart, ' ')
-        if (typeof msgFormatter?.padEnd === 'number') value = value.toString().padEnd(msgFormatter.padEnd, ' ')
-    }
+    let keyValueString = prefix ? '  ' : ''
+    let first = true
+
+    value = formatValueOptions(value, opts.formatter?.[key])
 
     const valueType = typeof value
-
     switch (valueType) {
         case 'string':
         case 'boolean':
@@ -161,9 +146,9 @@ function formatValue(key: string | undefined, value: unknown, prefix: boolean, o
         case 'object':
             if (key)
                 if (value === null) {
-                    line += Cyan + key
+                    keyValueString += Cyan + key
                 } else {
-                    line += Cyan + key + ' '
+                    keyValueString += Cyan + key + ' '
                 }
             break
     }
@@ -172,28 +157,49 @@ function formatValue(key: string | undefined, value: unknown, prefix: boolean, o
         case 'string':
         case 'boolean':
         case 'number':
-            line += White + value.toString()
+            keyValueString += White + value.toString()
             break
         case 'object':
             if (Array.isArray(value)) {
-                line += Gray + '[ '
+                let arrayLine = Gray + '[ '
                 for (const value2 of value) {
-                    line += formatValue(undefined, value2, !first, opts)
+                    arrayLine += formatValue(undefined, value2, !first, opts)
                     first = false
                 }
-                line += Gray + ' ]'
+                arrayLine += Gray + ' ]'
+                keyValueString += arrayLine
             } else if (value === null) {
                 // Do nothing
             } else {
-                line += Gray + '{ '
+                let objectLine = Gray + '{ '
                 for (const key in value as object) {
                     const value2 = (value as Record<string, unknown>)[key]
-                    line += formatValue(key, value2, !first, opts)
+                    objectLine += formatValue(key, value2, !first, opts)
                     first = false
                 }
-                line += Gray + ' }'
+                objectLine += Gray + ' }'
+                keyValueString += objectLine
             }
             break
     }
-    return line
+
+    return formatKeyValue(keyValueString, opts.formatter?.[key])
+}
+
+function formatValueOptions(value: unknown, formatter?: StringFormatter | false) {
+    if (value === undefined) return ''
+    if (typeof value === 'object') return value
+    if (formatter === false) return ''
+    if (!formatter) return value.toString()
+    let newValue = value.toString()
+    if (typeof formatter?.padStart === 'number') newValue = newValue.padStart(formatter.padStart, ' ')
+    if (typeof formatter?.padEnd === 'number') newValue = newValue.padEnd(formatter.padEnd, ' ')
+    if (formatter?.error) newValue = Red + Bold + newValue + Reset
+    return newValue
+}
+
+function formatKeyValue(keyValue: string, formatter?: StringFormatter | false) {
+    if (formatter === false) return ''
+    if (formatter?.dim) keyValue = Dim + keyValue + Reset
+    return keyValue
 }

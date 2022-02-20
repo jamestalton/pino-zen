@@ -12,6 +12,8 @@
 { "level": "error", "cat": "category", "msg": "message" , "number": 1, "string": "hello", "boolean": false, "object": { "abc":123}, "array": [123,456] }
 { "level": "fatal", "cat": "category", "msg": "message" , "number": 1, "string": "hello", "boolean": false, "object": { "abc":123}, "array": [123,456] }
 
+{ "level": "error", "cat": "category", "msg": "message" , "error": "string", "string": "hello" }
+
 { "level": "info", "object": { "abc": 123, "def": 456 } }
 { "level": "info", "object": { "abc": null, "def": 456 } }
 { "level": "info", "object": { "abc": null } }
