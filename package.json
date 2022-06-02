@@ -39,22 +39,22 @@
     },
     "dependencies": {
         "@types/args": "^5.0.0",
-        "args": "^5.0.1",
+        "args": "^5.0.3",
         "pino-abstract-transport": "^0.5.0",
-        "sonic-boom": "^2.6.0",
+        "sonic-boom": "^3.0.0",
         "split2": "^4.1.0"
     },
     "devDependencies": {
         "@types/node": "^17.x.x",
         "@types/split2": "^3.2.1",
-        "@typescript-eslint/eslint-plugin": "^5.10.2",
-        "@typescript-eslint/parser": "^5.10.2",
-        "eslint": "^8.8.0",
-        "eslint-config-prettier": "^8.3.0",
+        "@typescript-eslint/eslint-plugin": "^5.27.0",
+        "@typescript-eslint/parser": "^5.27.0",
+        "eslint": "^8.16.0",
+        "eslint-config-prettier": "^8.5.0",
         "eslint-plugin-prettier": "^4.0.0",
-        "prettier": "^2.5.1",
-        "ts-node": "^10.4.0",
-        "typescript": "^4.5.5"
+        "prettier": "^2.6.2",
+        "ts-node": "^10.8.0",
+        "typescript": "^4.7.2"
     },
     "prettier": {
         "printWidth": 120,

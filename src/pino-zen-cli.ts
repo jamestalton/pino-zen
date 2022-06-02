@@ -96,18 +96,21 @@ if (opts.right) {
 }
 
 const myTransportStream = new Writable({
-    async write(chunk: Buffer, enc, cb) {
-        let value: string
-        try {
-            const obj = JSON.parse(chunk.toString()) as unknown
-            value = FormatMessage(obj, pinoZenOptions)
-        } catch (err) {
-            value = chunk.toString()
+    write(chunk: Buffer, enc: BufferEncoding, cb: (error?: Error) => void) {
+        async function writeAsync(chunk: Buffer, enc: BufferEncoding, cb: (error?: Error) => void) {
+            let value: string
+            try {
+                const obj = JSON.parse(chunk.toString()) as unknown
+                value = FormatMessage(obj, pinoZenOptions)
+            } catch (err) {
+                value = chunk.toString()
+            }
+            if (!process.stdout.write(value + '\n')) {
+                await once(process.stdout, 'drain')
+            }
+            cb()
         }
-        if (!process.stdout.write(value + '\n')) {
-            await once(process.stdout, 'drain')
-        }
-        cb()
+        void writeAsync(chunk, enc, cb)
     },
 })
 

@@ -14,12 +14,17 @@ export const Black = '\x1b[30m'
 
 const BgRed = '\x1b[41m'
 
-const Trace = Bold + Magenta
-const Debug = Bold + Blue
-const Info = Bold + Green
-const Warn = Yellow
-const Error = Bold + Red
-const Fatal = BgRed + Black
+const Trace = `${Bold}${Magenta}TRACE${Reset}${White}`
+const Debug = `${Bold}${Blue}TRACE${Reset}${White}`
+const Info = `${Bold}${Green}TRACE${Reset}${White}`
+const Warn = `${Yellow}TRACE${Reset}${White}`
+const Error = `${Bold}${Red}TRACE${Reset}${White}`
+const Fatal = `${BgRed}${Black}FATAL${Reset}${White}`
+
+const ObjectStart = `${Bold}${Dim}${Black}{ ${Reset}${White}`
+const ObjectEnd = `${Bold}${Dim}${Black} }${Reset}${White}`
+const ArrayStart = `${Bold}${Dim}${Black}[ ${Reset}${White}`
+const ArrayEnd = `${Bold}${Dim}${Black} ]${Reset}${White}`
 
 export interface PinoZenOptions {
     destination?: string | number
@@ -44,23 +49,23 @@ export function FormatMessage(message: unknown, opts: PinoZenOptions): string {
     switch (level) {
         case 10:
         case 'trace':
-            line += Trace
+            line = Trace
             break
         case 20:
         case 'debug':
-            line += Debug
+            line = Debug
             break
         case 30:
         case 'info':
-            line += Info
+            line = Info
             break
         case 40:
         case 'warn':
-            line += Warn
+            line = Warn
             break
         case 50:
         case 'error':
-            line += Error
+            line = Error
             break
         case 60:
         case 'fatal':
@@ -68,87 +73,68 @@ export function FormatMessage(message: unknown, opts: PinoZenOptions): string {
             break
     }
 
-    const cat = (message as Record<string, unknown>).cat
-    let hasCategory = false
-    if (cat !== undefined) {
-        hasCategory = true
-        line += formatValueOptions(cat, opts.formatter?.cat)
-    }
+    const msg = (message as Record<string, unknown>).msg as string
+    if (msg) {
+        line += Dim + Bold + Black + ':' + Reset + White + Bold + msg
+        line += Reset
 
-    if (!hasCategory) {
-        switch (level) {
-            case 10:
-            case 'trace':
-                line += 'TRACE'
-                break
-            case 20:
-            case 'debug':
-                line += 'DEBUG'
-                break
-            case 30:
-            case 'info':
-                line += ' INFO'
-                break
-            case 40:
-            case 'warn':
-                line += ' WARN'
-                break
-            case 50:
-            case 'error':
-                line += 'ERROR'
-                break
-            case 60:
-            case 'fatal':
-                line += 'FATAL'
-                break
+        for (const key in message as Record<string, unknown>) {
+            let first = !!msg
+            switch (key) {
+                case 'msg':
+                case 'time':
+                case 'level':
+                    break
+                default: {
+                    const value = (message as Record<string, unknown>)[key]
+                    line += formatValue(key, value, first, opts)
+                    first = false
+                    break
+                }
+            }
         }
-    }
-
-    line += Reset + White + Bold + ' '
-
-    const msg = (message as Record<string, unknown>).msg
-    line += formatValueOptions(msg, opts.formatter?.msg)
-
-    line += Reset
-
-    for (const key in message as Record<string, unknown>) {
-        let first = !!msg
-        switch (key) {
-            case 'cat':
-            case 'msg':
-            case 'time':
-            case 'level':
-                break
-            default: {
-                const value = (message as Record<string, unknown>)[key]
-                line += formatValue(key, value, first, opts)
-                first = false
-                break
+    } else {
+        if ((message as Record<string, unknown>).level) line += ' '
+        let pad = false
+        for (const key in message as Record<string, unknown>) {
+            switch (key) {
+                case 'msg':
+                case 'time':
+                case 'level':
+                    break
+                default: {
+                    const value = (message as Record<string, unknown>)[key]
+                    line += formatValue(key, value, pad, opts)
+                    pad = true
+                    break
+                }
             }
         }
     }
+
     return line + Reset
 }
 
 function formatValue(key: string | undefined, value: unknown, prefix: boolean, opts: PinoZenOptions) {
     if (opts.formatter?.key === false) return
 
-    let keyValueString = prefix ? '  ' : ''
+    let keyValueString = prefix ? Dim + Bold + Black + ', ' + Reset : ''
     let first = true
-
-    value = formatValueOptions(value, opts.formatter?.[key])
 
     const valueType = typeof value
     switch (valueType) {
         case 'string':
         case 'boolean':
         case 'number':
+            if (key) keyValueString += Cyan + key + Dim + Bold + Black + ':' + Reset
+            break
         case 'object':
             if (key)
                 if (value === null) {
                     keyValueString += Cyan + key
                 } else {
-                    keyValueString += Cyan + key + ' '
+                    // keyValueString += Blue + key + Dim + Bold + Black + ':' + Reset
+                    keyValueString += Blue + key
                 }
             break
     }
@@ -161,45 +147,27 @@ function formatValue(key: string | undefined, value: unknown, prefix: boolean, o
             break
         case 'object':
             if (Array.isArray(value)) {
-                let arrayLine = Gray + '[ '
+                let arrayLine = ArrayStart
                 for (const value2 of value) {
                     arrayLine += formatValue(undefined, value2, !first, opts)
                     first = false
                 }
-                arrayLine += Gray + ' ]'
+                arrayLine += ArrayEnd
                 keyValueString += arrayLine
             } else if (value === null) {
                 // Do nothing
             } else {
-                let objectLine = Gray + '{ '
+                let objectLine = ObjectStart
                 for (const key in value as object) {
                     const value2 = (value as Record<string, unknown>)[key]
                     objectLine += formatValue(key, value2, !first, opts)
                     first = false
                 }
-                objectLine += Gray + ' }'
+                objectLine += ObjectEnd
                 keyValueString += objectLine
             }
             break
     }
 
-    return formatKeyValue(keyValueString, opts.formatter?.[key])
-}
-
-function formatValueOptions(value: unknown, formatter?: StringFormatter | false) {
-    if (value === undefined) return ''
-    if (typeof value === 'object') return value
-    if (formatter === false) return ''
-    if (!formatter) return value.toString()
-    let newValue = value.toString()
-    if (typeof formatter?.padStart === 'number') newValue = newValue.padStart(formatter.padStart, ' ')
-    if (typeof formatter?.padEnd === 'number') newValue = newValue.padEnd(formatter.padEnd, ' ')
-    if (formatter?.error) newValue = Red + Bold + newValue + Reset
-    return newValue
-}
-
-function formatKeyValue(keyValue: string, formatter?: StringFormatter | false) {
-    if (formatter === false) return ''
-    if (formatter?.dim) keyValue = Dim + keyValue + Reset
-    return keyValue
+    return keyValueString
 }
