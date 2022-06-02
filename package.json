@@ -1,6 +1,6 @@
 {
     "name": "pino-zen",
-    "version": "2.0.6",
+    "version": "2.0.7",
     "description": "Zen for Pino logging",
     "author": "James Talton <talton@gmail.com>",
     "license": "MIT",
