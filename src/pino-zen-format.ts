@@ -15,10 +15,10 @@ export const Black = '\x1b[30m'
 const BgRed = '\x1b[41m'
 
 const Trace = `${Bold}${Magenta}TRACE${Reset}${White}`
-const Debug = `${Bold}${Blue}TRACE${Reset}${White}`
-const Info = `${Bold}${Green}TRACE${Reset}${White}`
-const Warn = `${Yellow}TRACE${Reset}${White}`
-const Error = `${Bold}${Red}TRACE${Reset}${White}`
+const Debug = `${Bold}${Blue}DEBUG${Reset}${White}`
+const Info = `${Bold}${Green} INFO${Reset}${White}`
+const Warn = `${Yellow} WARN${Reset}${White}`
+const Error = `${Bold}${Red}ERROR${Reset}${White}`
 const Fatal = `${BgRed}${Black}FATAL${Reset}${White}`
 
 const ObjectStart = `${Bold}${Dim}${Black}{ ${Reset}${White}`
