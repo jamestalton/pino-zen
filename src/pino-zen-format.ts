@@ -1,3 +1,5 @@
+import chalk from 'chalk'
+
 const Reset = '\x1b[0m'
 const Dim = '\x1b[2m'
 const Bold = '\x1b[1m'
@@ -14,17 +16,10 @@ export const Black = '\x1b[30m'
 
 const BgRed = '\x1b[41m'
 
-const Trace = `${Bold}${Magenta}TRACE${Reset}${White}`
-const Debug = `${Bold}${Blue}DEBUG${Reset}${White}`
-const Info = `${Bold}${Green} INFO${Reset}${White}`
-const Warn = `${Yellow} WARN${Reset}${White}`
-const Error = `${Bold}${Red}ERROR${Reset}${White}`
-const Fatal = `${BgRed}${Black}FATAL${Reset}${White}`
-
-const ObjectStart = `${Bold}${Dim}${Black}{ ${Reset}${White}`
-const ObjectEnd = `${Bold}${Dim}${Black} }${Reset}${White}`
-const ArrayStart = `${Bold}${Dim}${Black}[ ${Reset}${White}`
-const ArrayEnd = `${Bold}${Dim}${Black} ]${Reset}${White}`
+const ObjectStart = chalk.blueBright.dim(':') + chalk.magenta('{ ') // `${Black}:{ ${White}`
+const ObjectEnd = chalk.magenta(' }')
+const ArrayStart = chalk.blueBright.dim(':') + chalk.yellow('[ ')
+const ArrayEnd = chalk.yellow(' ]')
 
 export interface PinoZenOptions {
     destination?: string | number
@@ -38,47 +33,45 @@ export interface StringFormatter {
     dim?: boolean
 }
 
-export function FormatMessage(message: unknown, opts: PinoZenOptions): string {
-    if (typeof message === 'string') {
-        return message
-    }
+export function FormatMessage(inputMessage: unknown, opts: PinoZenOptions): string {
+    if (typeof inputMessage === 'string') return inputMessage
+    const message = inputMessage as Record<string, unknown>
 
     let line = ''
 
-    const level = (message as Record<string, unknown>).level
+    const { level, msg, ...details } = message
+
     switch (level) {
         case 10:
         case 'trace':
-            line = Trace
+            line = chalk.magenta.bold('TRACE')
             break
         case 20:
         case 'debug':
-            line = Debug
+            line = chalk.blue.bold('DEBUG')
             break
         case 30:
         case 'info':
-            line = Info
+            line = chalk.green.bold(' INFO')
             break
         case 40:
         case 'warn':
-            line = Warn
+            line = chalk.yellow.bold(' WARN')
             break
         case 50:
         case 'error':
-            line = Error
+            line = chalk.red.bold('ERROR')
             break
         case 60:
         case 'fatal':
-            line += Fatal
+            line = chalk.black.bgRed('FATAL')
             break
     }
 
-    const msg = (message as Record<string, unknown>).msg as string
-    if (msg) {
-        line += Dim + Bold + Black + ':' + Reset + White + Bold + msg
-        line += Reset
+    if (msg && typeof msg === 'string') {
+        line += chalk.blueBright.dim(':') + chalk.whiteBright.bold(msg)
 
-        for (const key in message as Record<string, unknown>) {
+        for (const key in message) {
             let first = !!msg
             switch (key) {
                 case 'msg':
@@ -86,7 +79,7 @@ export function FormatMessage(message: unknown, opts: PinoZenOptions): string {
                 case 'level':
                     break
                 default: {
-                    const value = (message as Record<string, unknown>)[key]
+                    const value = message[key]
                     line += formatValue(key, value, first, opts)
                     first = false
                     break
@@ -94,16 +87,16 @@ export function FormatMessage(message: unknown, opts: PinoZenOptions): string {
             }
         }
     } else {
-        if ((message as Record<string, unknown>).level) line += ' '
+        if (message.level) line += ' '
         let pad = false
-        for (const key in message as Record<string, unknown>) {
+        for (const key in message) {
             switch (key) {
                 case 'msg':
                 case 'time':
                 case 'level':
                     break
                 default: {
-                    const value = (message as Record<string, unknown>)[key]
+                    const value = message[key]
                     line += formatValue(key, value, pad, opts)
                     pad = true
                     break
@@ -112,13 +105,13 @@ export function FormatMessage(message: unknown, opts: PinoZenOptions): string {
         }
     }
 
-    return line + Reset
+    return line
 }
 
-function formatValue(key: string | undefined, value: unknown, prefix: boolean, opts: PinoZenOptions) {
+function formatValue(key: string | undefined, value: unknown, prefix: boolean, opts: PinoZenOptions, noSemi?: boolean) {
     if (opts.formatter?.key === false) return
 
-    let keyValueString = prefix ? Dim + Bold + Black + ', ' + Reset : ''
+    let keyValueString = prefix ? chalk.blueBright.dim(noSemi ? ', ' : '  ') : ''
     let first = true
 
     const valueType = typeof value
@@ -126,7 +119,7 @@ function formatValue(key: string | undefined, value: unknown, prefix: boolean, o
         case 'string':
         case 'boolean':
         case 'number':
-            if (key) keyValueString += Cyan + key + Dim + Bold + Black + ':' + Reset
+            if (key) keyValueString += chalk.cyan(key) + chalk.blueBright.dim(':')
             break
         case 'object':
             if (key)
@@ -149,7 +142,7 @@ function formatValue(key: string | undefined, value: unknown, prefix: boolean, o
             if (Array.isArray(value)) {
                 let arrayLine = ArrayStart
                 for (const value2 of value) {
-                    arrayLine += formatValue(undefined, value2, !first, opts)
+                    arrayLine += formatValue(undefined, value2, !first, opts, true)
                     first = false
                 }
                 arrayLine += ArrayEnd
@@ -157,10 +150,10 @@ function formatValue(key: string | undefined, value: unknown, prefix: boolean, o
             } else if (value === null) {
                 // Do nothing
             } else {
-                let objectLine = ObjectStart
-                for (const key in value as object) {
-                    const value2 = (value as Record<string, unknown>)[key]
-                    objectLine += formatValue(key, value2, !first, opts)
+                let objectLine = noSemi ? chalk.magenta('{ ') : ObjectStart
+                for (const key2 in value as object) {
+                    const value2 = (value as Record<string, unknown>)[key2]
+                    objectLine += formatValue(key2, value2, !first, opts)
                     first = false
                 }
                 objectLine += ObjectEnd

@@ -40,21 +40,22 @@
     "dependencies": {
         "@types/args": "^5.0.0",
         "args": "^5.0.3",
-        "pino-abstract-transport": "^0.5.0",
-        "sonic-boom": "^3.0.0",
+        "chalk": "^5.2.0",
+        "pino-abstract-transport": "^1.0.0",
+        "sonic-boom": "^3.2.1",
         "split2": "^4.1.0"
     },
     "devDependencies": {
-        "@types/node": "^17.x.x",
+        "@types/node": "^18.x.x",
         "@types/split2": "^3.2.1",
-        "@typescript-eslint/eslint-plugin": "^5.27.0",
-        "@typescript-eslint/parser": "^5.27.0",
-        "eslint": "^8.16.0",
-        "eslint-config-prettier": "^8.5.0",
-        "eslint-plugin-prettier": "^4.0.0",
-        "prettier": "^2.6.2",
-        "ts-node": "^10.8.0",
-        "typescript": "^4.7.2"
+        "@typescript-eslint/eslint-plugin": "^5.49.0",
+        "@typescript-eslint/parser": "^5.49.0",
+        "eslint": "^8.33.0",
+        "eslint-config-prettier": "^8.6.0",
+        "eslint-plugin-prettier": "^4.2.1",
+        "prettier": "^2.8.3",
+        "ts-node": "^10.9.1",
+        "typescript": "^4.9.4"
     },
     "prettier": {
         "printWidth": 120,
