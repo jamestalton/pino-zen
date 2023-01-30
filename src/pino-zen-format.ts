@@ -1,21 +1,5 @@
 import chalk from 'chalk'
 
-const Reset = '\x1b[0m'
-const Dim = '\x1b[2m'
-const Bold = '\x1b[1m'
-const Normal = '\x1b[22m'
-export const Red = '\x1b[31m'
-export const Green = '\x1b[32m'
-export const Yellow = '\x1b[33m'
-export const Blue = '\x1b[34m'
-export const Magenta = '\x1b[35m'
-export const Cyan = '\x1b[36m'
-export const White = '\x1b[37m'
-export const Gray = '\x1b[90m'
-export const Black = '\x1b[30m'
-
-const BgRed = '\x1b[41m'
-
 const ObjectStart = chalk.blueBright.dim(':') + chalk.magenta('{ ') // `${Black}:{ ${White}`
 const ObjectEnd = chalk.magenta(' }')
 const ArrayStart = chalk.blueBright.dim(':') + chalk.yellow('[ ')
@@ -124,10 +108,10 @@ function formatValue(key: string | undefined, value: unknown, prefix: boolean, o
         case 'object':
             if (key)
                 if (value === null) {
-                    keyValueString += Cyan + key
+                    keyValueString += chalk.cyan(key)
                 } else {
                     // keyValueString += Blue + key + Dim + Bold + Black + ':' + Reset
-                    keyValueString += Blue + key
+                    keyValueString += chalk.blue(key)
                 }
             break
     }
@@ -136,7 +120,7 @@ function formatValue(key: string | undefined, value: unknown, prefix: boolean, o
         case 'string':
         case 'boolean':
         case 'number':
-            keyValueString += White + value.toString()
+            keyValueString += chalk.white(value.toString())
             break
         case 'object':
             if (Array.isArray(value)) {
