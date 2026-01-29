@@ -25,7 +25,7 @@ export function FormatMessage(inputMessage: unknown, opts: PinoZenOptions): stri
 
     let line = ''
 
-    const { level, msg, ...details } = message
+    const { level, msg } = message
 
     switch (level) {
         case 10:
@@ -60,7 +60,6 @@ export function FormatMessage(inputMessage: unknown, opts: PinoZenOptions): stri
         line += chalk.blueBright.dim(':') + chalk.whiteBright.bold(msg)
 
         for (const key in message) {
-            let first = !!msg
             switch (key) {
                 case 'msg':
                 case 'time':
@@ -68,8 +67,7 @@ export function FormatMessage(inputMessage: unknown, opts: PinoZenOptions): stri
                     break
                 default: {
                     const value = message[key]
-                    line += formatValue(key, value, first, opts)
-                    first = false
+                    line += formatValue(key, value, true, opts)
                     break
                 }
             }
@@ -133,7 +131,7 @@ function formatValue(key: string | undefined, value: unknown, prefix: boolean, o
         case 'string':
         case 'boolean':
         case 'number':
-            keyValueString += chalk.white(value.toString())
+            keyValueString += chalk.white(String(value))
             break
         case 'object':
             if (Array.isArray(value)) {

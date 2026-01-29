@@ -15,12 +15,11 @@ const { values } = parseArgs({
     strict: false,
 })
 
-const pinoZenOptions: PinoZenOptions = {
-    formatter: {},
-}
+const formatter: Record<string, false | StringFormatter> = {}
+const pinoZenOptions: PinoZenOptions = { formatter }
 
-function addFormatOption(key: string, formatter: StringFormatter) {
-    pinoZenOptions.formatter[key] = { ...pinoZenOptions.formatter[key], ...formatter }
+function addFormatOption(key: string, value: StringFormatter) {
+    formatter[key] = { ...formatter[key], ...value }
 }
 
 function addPad(value: string, direction: 'padStart' | 'padEnd') {
@@ -49,8 +48,8 @@ for (const v of (values.right as string[]) ?? []) {
 }
 
 const myTransportStream = new Writable({
-    write(chunk: Buffer, enc: BufferEncoding, cb: (error?: Error) => void) {
-        async function writeAsync(chunk: Buffer, enc: BufferEncoding, cb: (error?: Error) => void) {
+    write(chunk: Buffer, _enc: BufferEncoding, cb: (error?: Error) => void) {
+        async function writeAsync(chunk: Buffer, cb: (error?: Error) => void) {
             let value: string
             try {
                 const obj = JSON.parse(chunk.toString()) as unknown
@@ -63,7 +62,7 @@ const myTransportStream = new Writable({
             }
             cb()
         }
-        void writeAsync(chunk, enc, cb)
+        void writeAsync(chunk, cb)
     },
 })
 

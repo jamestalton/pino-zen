@@ -8,10 +8,10 @@ pino-zen is a colored log formatter for Pino JSON logs. It provides two interfac
 
 ## Commands
 
-- `npm run build` — Clean build: tsc → rollup bundle to ESM → add shebang to CLI → remove intermediate .js files
+- `npm run build` — Clean build: tsc to ES modules + add shebang to CLI
 - `npm run lint` — Biome linter on src/
 - `npm run format` — Biome formatter on src/ (write mode)
-- `npm test` — Runs lint only (no unit tests exist)
+- `npm test` — Runs lint, type-check, and unit tests
 - `npm start` — Build + pipe test.txt through CLI with sample flags
 
 ## Architecture
@@ -26,13 +26,13 @@ Three source files in `src/`, each with a distinct role:
 
 ## Build Output
 
-Compiled output goes to `lib/`. The build uses rollup to produce ES modules:
-- `lib/pino-zen.mjs` — Transport module (package main)
-- `lib/pino-zen-cli.mjs` — CLI with `#!/usr/bin/env node` shebang
+Compiled output goes to `lib/`. The build uses tsc to produce ES modules:
+- `lib/pino-zen.js` — Transport module (package main)
+- `lib/pino-zen-cli.js` — CLI with `#!/usr/bin/env node` shebang
 - `lib/*.d.ts` — TypeScript declarations
 
 ## Code Style
 
 - ES modules (`"type": "module"`)
-- Biome: 4-space indent, 120 char line width, single quotes, ES5 trailing commas, semicolons as-needed
-- TypeScript targeting ES2020
+- Biome: 4-space indent, 120 char line width, single quotes, trailing commas, semicolons as-needed
+- TypeScript strict mode targeting ES2022

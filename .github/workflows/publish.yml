@@ -15,12 +15,12 @@ jobs:
     npm-publish:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v4
               with:
                   token: ${{ secrets.GH_TOKEN }}
-            - uses: actions/setup-node@v2
+            - uses: actions/setup-node@v4
               with:
-                  node-version: '14'
+                  node-version: '22'
                   registry-url: https://registry.npmjs.org/
                   cache: 'npm'
             - name: npm version ${{ github.event.inputs.versionIncrement }}
@@ -28,8 +28,9 @@ jobs:
                   TAG=$(npm version ${{ github.event.inputs.versionIncrement }} --no-git-tag-version)
                   echo "TAG=$(echo $TAG)" >> $GITHUB_ENV
             - run: npm ci
+            - run: npm test
             - run: npm run build
-            - uses: EndBug/add-and-commit@v7
+            - uses: EndBug/add-and-commit@v9
               with:
                   default_author: github_actions
                   message: Release ${{ env.TAG }}

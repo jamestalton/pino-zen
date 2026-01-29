@@ -18,10 +18,10 @@ export default async function (opts: PinoZenOptions) {
             }
         },
         {
-            async close(err) {
+            async close() {
                 destination.end()
                 await once(destination, 'close')
             },
-        }
+        },
     )
 }

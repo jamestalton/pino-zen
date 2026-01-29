@@ -1,61 +1,39 @@
 {
-  "formatter": {
-    "enabled": true,
-    "formatWithErrors": false,
-    "indentStyle": "space",
-    "indentWidth": 4,
-    "lineEnding": "lf",
-    "lineWidth": 120
-  },
-  "javascript": {
+    "$schema": "https://biomejs.dev/schemas/2.3.13/schema.json",
     "formatter": {
-      "quoteStyle": "single",
-      "semicolons": "asNeeded",
-      "trailingCommas": "es5"
+        "indentStyle": "space",
+        "indentWidth": 4,
+        "lineEnding": "lf",
+        "lineWidth": 120
     },
-    "parser": {
-      "unsafeParameterDecoratorsEnabled": true
+    "javascript": {
+        "formatter": {
+            "quoteStyle": "single",
+            "semicolons": "asNeeded",
+            "trailingCommas": "all"
+        }
+    },
+    "linter": {
+        "rules": {
+            "recommended": true,
+            "style": {
+                "noImplicitBoolean": "warn",
+                "useBlockStatements": "warn",
+                "useDefaultParameterLast": "warn",
+                "useDefaultSwitchClause": "warn",
+                "useExplicitLengthCheck": "warn",
+                "useSelfClosingElements": "warn"
+            },
+            "suspicious": {
+                "noConsole": "warn",
+                "noExplicitAny": "warn",
+                "useAwait": "error"
+            }
+        }
+    },
+    "json": {
+        "formatter": {
+            "trailingCommas": "none"
+        }
     }
-  },
-  "linter": {
-    "enabled": true,
-    "rules": {
-      "recommended": true,
-      "correctness": {
-        "noUnusedVariables": "off"
-      },
-      "style": {
-        "noImplicitBoolean": "warn",
-        "useBlockStatements": "warn",
-        "useConst": "warn",
-        "useDefaultParameterLast": "warn",
-        "useDefaultSwitchClause": "warn",
-        "useEnumInitializers": "warn",
-        "useExplicitLengthCheck": "warn",
-        "useSelfClosingElements": "warn"
-      },
-      "suspicious": {
-        "noArrayIndexKey": "warn",
-        "noAsyncPromiseExecutor": "error",
-        "noCatchAssign": "error",
-        "noConsole": "warn",
-        "noControlCharactersInRegex": "error",
-        "noDebugger": "error",
-        "noDuplicateObjectKeys": "error",
-        "noDuplicateParameters": "error",
-        "noExplicitAny": "warn",
-        "noFallthroughSwitchClause": "error",
-        "noImplicitAnyLet": "error",
-        "noMisleadingCharacterClass": "error",
-        "noMisleadingInstantiator": "error",
-        "noUnsafeNegation": "error",
-        "useAwait": "error"
-      }
-    }
-  },
-  "json": {
-    "formatter": {
-      "trailingCommas": "none"
-    }
-  }
 }

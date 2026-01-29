@@ -9,16 +9,29 @@
     "bugs": {
         "url": "https://github.com/jamestalton/pino-zen/issues"
     },
-    "keywords": ["pino"],
-    "files": ["lib"],
+    "keywords": [
+        "pino"
+    ],
+    "files": [
+        "lib"
+    ],
     "repository": {
         "type": "git",
         "url": "git+ssh://git@github.com/jamestalton/pino-zen.git"
     },
     "main": "./lib/pino-zen.js",
     "types": "./lib/pino-zen.d.ts",
+    "exports": {
+        ".": {
+            "types": "./lib/pino-zen.d.ts",
+            "default": "./lib/pino-zen.js"
+        }
+    },
     "bin": {
         "pino-zen": "./lib/pino-zen-cli.js"
+    },
+    "engines": {
+        "node": ">=18"
     },
     "scripts": {
         "start": "npm run build && cat test.txt | node lib/pino-zen-cli.js --right boolean=5 --dim boolean --error error",
@@ -35,7 +48,7 @@
         "split2": "^4.2.0"
     },
     "devDependencies": {
-        "@biomejs/biome": "^1.9.3",
+        "@biomejs/biome": "^2.3.13",
         "@types/node": "^25.x.x",
         "@types/split2": "^4.2.3",
         "typescript": "^5.9.3"

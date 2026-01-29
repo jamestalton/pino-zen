@@ -5,13 +5,12 @@
         "lib": ["ES2022"],
         "sourceMap": false,
         "declaration": true,
-        "noFallthroughCasesInSwitch": true,
+        "strict": true,
         "moduleResolution": "Node16",
-        "noImplicitAny": true,
         "outDir": "./lib",
         "removeComments": true,
         "skipLibCheck": true,
-        "isolatedModules": true
+        "verbatimModuleSyntax": true
     },
     "include": ["src"]
 }
