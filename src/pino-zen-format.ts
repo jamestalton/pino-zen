@@ -129,9 +129,13 @@ function formatValue(key: string | undefined, value: unknown, prefix: boolean, o
 
     switch (valueType) {
         case 'string':
-        case 'boolean':
-        case 'number':
             keyValueString += chalk.white(String(value))
+            break
+        case 'boolean':
+            keyValueString += chalk.yellow(String(value))
+            break
+        case 'number':
+            keyValueString += chalk.green(String(value))
             break
         case 'object':
             if (Array.isArray(value)) {

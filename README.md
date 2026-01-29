@@ -19,7 +19,10 @@ Use `pino-zen` directly as a Pino transport for colored console output alongside
 ```js
 import pino from "pino";
 
-const level = "debug";
+const level = process.env.LOG_LEVEL
+if (!["debug", "info", "warn", "error", "trace"].includes(level)) {
+  throw new Error(`Invalid log level: ${level}`);
+}
 
 const logger = pino({
   level,
