@@ -11,13 +11,14 @@ on:
                     - major
                     - minor
                     - patch
+permissions:
+    contents: write
+
 jobs:
     npm-publish:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-              with:
-                  token: ${{ secrets.GH_TOKEN }}
             - uses: actions/setup-node@v4
               with:
                   node-version: '22'
