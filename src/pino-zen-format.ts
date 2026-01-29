@@ -18,7 +18,9 @@ export interface StringFormatter {
 }
 
 export function FormatMessage(inputMessage: unknown, opts: PinoZenOptions): string {
-    if (typeof inputMessage === 'string') return inputMessage
+    if (typeof inputMessage === 'string') {
+        return inputMessage
+    }
     const message = inputMessage as Record<string, unknown>
 
     let line = ''
@@ -50,6 +52,8 @@ export function FormatMessage(inputMessage: unknown, opts: PinoZenOptions): stri
         case 'fatal':
             line = chalk.black.bgRed('FATAL')
             break
+        default:
+            break
     }
 
     if (msg && typeof msg === 'string') {
@@ -71,7 +75,9 @@ export function FormatMessage(inputMessage: unknown, opts: PinoZenOptions): stri
             }
         }
     } else {
-        if (message.level) line += ' '
+        if (message.level) {
+            line += ' '
+        }
         let pad = false
         for (const key in message) {
             switch (key) {
@@ -93,7 +99,9 @@ export function FormatMessage(inputMessage: unknown, opts: PinoZenOptions): stri
 }
 
 function formatValue(key: string | undefined, value: unknown, prefix: boolean, opts: PinoZenOptions, noSemi?: boolean) {
-    if (opts.formatter?.key === false) return
+    if (opts.formatter?.key === false) {
+        return
+    }
 
     let keyValueString = prefix ? chalk.blueBright.dim(noSemi ? ', ' : '  ') : ''
     let first = true
@@ -103,16 +111,21 @@ function formatValue(key: string | undefined, value: unknown, prefix: boolean, o
         case 'string':
         case 'boolean':
         case 'number':
-            if (key) keyValueString += chalk.cyan(key) + chalk.blueBright.dim(':')
+            if (key) {
+                keyValueString += chalk.cyan(key) + chalk.blueBright.dim(':')
+            }
             break
         case 'object':
-            if (key)
+            if (key) {
                 if (value === null) {
                     keyValueString += chalk.cyan(key)
                 } else {
                     // keyValueString += Blue + key + Dim + Bold + Black + ':' + Reset
                     keyValueString += chalk.blue(key)
                 }
+            }
+            break
+        default:
             break
     }
 
@@ -143,6 +156,8 @@ function formatValue(key: string | undefined, value: unknown, prefix: boolean, o
                 objectLine += ObjectEnd
                 keyValueString += objectLine
             }
+            break
+        default:
             break
     }
 

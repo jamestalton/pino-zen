@@ -1,9 +1,9 @@
 import args from 'args'
-import { once } from 'events'
-import { fstatSync } from 'fs'
+import { once } from 'node:events'
+import { fstatSync } from 'node:fs'
 import split2 from 'split2'
-import { pipeline, Writable } from 'stream'
-import { FormatMessage, PinoZenOptions, StringFormatter } from './pino-zen-format'
+import { pipeline, Writable } from 'node:stream'
+import { FormatMessage, type PinoZenOptions, type StringFormatter } from './pino-zen-format'
 
 args.option(['d', 'dim'], 'Dim a value: (`-d something`)')
     .option(['r', 'right'], 'Pad value on right: (`-r msg=10`)')
@@ -105,7 +105,7 @@ const myTransportStream = new Writable({
             } catch (err) {
                 value = chunk.toString()
             }
-            if (!process.stdout.write(value + '\n')) {
+            if (!process.stdout.write(`${value}\n`)) {
                 await once(process.stdout, 'drain')
             }
             cb()

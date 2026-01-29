@@ -30,7 +30,10 @@
         "build-mjs": "npx rollup --format es --file lib/pino-zen.mjs -- lib/pino-zen.js",
         "build-cli": "npx rollup --format es --file lib/pino-zen-cli.js -- lib/pino-zen-cli.js && echo '#!/usr/bin/env node' > ./lib/pino-zen-cli.mjs && cat ./lib/pino-zen-cli.js >> ./lib/pino-zen-cli.mjs",
         "build2": "rm -f lib/* && tsc && npx rollup --format es --file lib/pino-zen.mjs -- lib/pino-zen.js && npx rollup --format es --file lib/pino-zen-cli.js -- lib/pino-zen-cli.js && echo '#!/usr/bin/env node' > ./lib/pino-zen-cli.mjs && cat ./lib/pino-zen-cli.js >> ./lib/pino-zen-cli.mjs && rm -f lib/*.js && chmod +x ./lib/pino-zen-cli.mjs",
-        "build-2": "echo '#!/usr/bin/env node' > ./lib/pino-zen-cli.mjs && cat ./lib/pino-zen-cli.js >> ./lib/pino-zen-cli.mjs && rm -f lib/*.js && chmod +x ./lib/pino-zen-cli.mjs"
+        "build-2": "echo '#!/usr/bin/env node' > ./lib/pino-zen-cli.mjs && cat ./lib/pino-zen-cli.js >> ./lib/pino-zen-cli.mjs && rm -f lib/*.js && chmod +x ./lib/pino-zen-cli.mjs",
+        "lint": "biome lint src",
+        "format": "biome format src --write",
+        "test": "npm run lint"
     },
     "dependencies": {
         "@types/args": "^5.0.4",
@@ -41,6 +44,7 @@
         "split2": "^4.2.0"
     },
     "devDependencies": {
+        "@biomejs/biome": "^1.9.3",
         "@types/node": "^25.x.x",
         "@types/split2": "^4.2.3",
         "ts-node": "^10.9.2",
