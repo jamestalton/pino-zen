@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
-import { FormatMessage, type PinoZenOptions } from '../src/pino-zen-format.ts'
+import { FormatMessage, type PinoZenOptions, ResetModuleMetadata } from '../src/pino-zen-format.ts'
 
 // biome-ignore lint: test utility
 const stripAnsi = (s: string) => s.replace(/\u001b\[[\d;]*m/g, '')
@@ -220,19 +220,30 @@ describe('FormatMessage', () => {
     describe('module mode', () => {
         const moduleOpts: PinoZenOptions = { module: 'module' }
 
+        ResetModuleMetadata()
+
         it('prefixes with module name in brackets', () => {
             const result = stripAnsi(FormatMessage({ level: 30, msg: 'started', module: 'server' }, moduleOpts))
             assert.match(result, /^\[server\]/)
         })
 
-        it('does not include level name in output', () => {
+        it('includes level name in output', () => {
             const result = stripAnsi(FormatMessage({ level: 30, msg: 'started', module: 'server' }, moduleOpts))
-            assert.ok(!result.includes('INFO'))
+            assert.ok(result.includes('INFO'))
         })
 
-        it('includes the message after the module', () => {
+        it('includes the message after the module and level', () => {
             const result = stripAnsi(FormatMessage({ level: 30, msg: 'started', module: 'server' }, moduleOpts))
-            assert.match(result, /\[server\] {2}started/)
+            assert.match(result, /\[server\] INFO:started/)
+        })
+
+        it('aligns shorter module names to the right', () => {
+            ResetModuleMetadata()
+            // First call sets max length to 8 ("[server]")
+            FormatMessage({ level: 30, msg: 'a', module: 'server' }, moduleOpts)
+            // Second call with "[db]" (4 chars) should have 4 leading spaces
+            const result = stripAnsi(FormatMessage({ level: 30, msg: 'b', module: 'db' }, moduleOpts))
+            assert.match(result, /^ {4}\[db\]/)
         })
 
         it('includes additional fields', () => {
@@ -244,6 +255,7 @@ describe('FormatMessage', () => {
         })
 
         it('cycles colors for different modules', () => {
+            ResetModuleMetadata()
             // This is harder to test with stripAnsi, but we can check if it runs without error
             const result1 = FormatMessage({ level: 30, msg: 'a', module: 'm1' }, moduleOpts)
             const result2 = FormatMessage({ level: 30, msg: 'b', module: 'm2' }, moduleOpts)
@@ -251,6 +263,7 @@ describe('FormatMessage', () => {
         })
 
         it('uses same color for same module', () => {
+            ResetModuleMetadata()
             const result1 = FormatMessage({ level: 30, msg: 'test', module: 'm1' }, moduleOpts)
             const result2 = FormatMessage({ level: 30, msg: 'other', module: 'm1' }, moduleOpts)
             // The prefixes should be identical (same color escapes)

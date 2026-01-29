@@ -12,8 +12,6 @@ export interface PinoZenOptions {
 }
 
 export interface StringFormatter {
-    padStart?: number
-    padEnd?: number
     error?: boolean
     dim?: boolean
 }
@@ -21,6 +19,7 @@ export interface StringFormatter {
 const moduleColorCache = new Map<string, (s: string) => string>()
 const moduleColors = [chalk.blue, chalk.magenta, chalk.cyan, chalk.blueBright, chalk.magentaBright, chalk.cyanBright]
 let nextColorIndex = 0
+let maxModuleLength = 0
 
 function getModuleColor(name: string) {
     let color = moduleColorCache.get(name)
@@ -30,6 +29,37 @@ function getModuleColor(name: string) {
         moduleColorCache.set(name, color)
     }
     return color
+}
+
+export function ResetModuleMetadata() {
+    moduleColorCache.clear()
+    nextColorIndex = 0
+    maxModuleLength = 0
+}
+
+function getLevelLabel(level: unknown): string {
+    switch (level) {
+        case 10:
+        case 'trace':
+            return chalk.magenta.bold('TRACE')
+        case 20:
+        case 'debug':
+            return chalk.blue.bold('DEBUG')
+        case 30:
+        case 'info':
+            return chalk.green.bold('INFO')
+        case 40:
+        case 'warn':
+            return chalk.yellow.bold('WARN')
+        case 50:
+        case 'error':
+            return chalk.red.bold('ERROR')
+        case 60:
+        case 'fatal':
+            return chalk.black.bgRed('FATAL')
+        default:
+            return ''
+    }
 }
 
 export function FormatMessage(inputMessage: unknown, opts: PinoZenOptions): string {
@@ -44,92 +74,27 @@ export function FormatMessage(inputMessage: unknown, opts: PinoZenOptions): stri
 
     if (opts.module && message[opts.module]) {
         const moduleName = String(message[opts.module])
+        const bracketedName = `[${moduleName}]`
+        maxModuleLength = Math.max(maxModuleLength, bracketedName.length)
+        const paddedName = bracketedName.padStart(maxModuleLength)
+
         const color = getModuleColor(moduleName)
-        line = `${color(`[${moduleName}]`)}  `
-
-        let msgColor = chalk.whiteBright
-        switch (level) {
-            case 10:
-            case 'trace':
-                msgColor = chalk.magentaBright
-                break
-            case 20:
-            case 'debug':
-                msgColor = chalk.blueBright
-                break
-            case 30:
-            case 'info':
-                msgColor = chalk.greenBright
-                break
-            case 40:
-            case 'warn':
-                msgColor = chalk.yellowBright
-                break
-            case 50:
-            case 'error':
-                msgColor = chalk.redBright
-                break
-            case 60:
-            case 'fatal':
-                msgColor = chalk.redBright.bold
-                break
-            default:
-                break
-        }
-
-        if (msg && typeof msg === 'string') {
-            line += msgColor(msg)
-        }
-
-        for (const key in message) {
-            switch (key) {
-                case 'msg':
-                case 'time':
-                case 'level':
-                case opts.module:
-                    break
-                default: {
-                    const value = message[key]
-                    line += formatValue(key, value, true, opts)
-                    break
-                }
-            }
-        }
-
-        return line
+        line = `${color(paddedName)} `
     }
 
-    switch (level) {
-        case 10:
-        case 'trace':
-            line = chalk.magenta.bold('TRACE')
-            break
-        case 20:
-        case 'debug':
-            line = chalk.blue.bold('DEBUG')
-            break
-        case 30:
-        case 'info':
-            line = chalk.green.bold(' INFO')
-            break
-        case 40:
-        case 'warn':
-            line = chalk.yellow.bold(' WARN')
-            break
-        case 50:
-        case 'error':
-            line = chalk.red.bold('ERROR')
-            break
-        case 60:
-        case 'fatal':
-            line = chalk.black.bgRed('FATAL')
-            break
-        default:
-            break
+    const levelLabel = getLevelLabel(level)
+    if (levelLabel) {
+        if (line.length === 0 && (level === 30 || level === 'info' || level === 40 || level === 'warn')) {
+            line += ' '
+        }
+        line += levelLabel
     }
 
     if (msg && typeof msg === 'string') {
-        line += chalk.blueBright.dim(':') + chalk.whiteBright.bold(msg)
+        if (levelLabel) {
+            line += chalk.blueBright.dim(':')
+        }
+        line += chalk.whiteBright.bold(msg)
 
         for (const key in message) {
             switch (key) {
@@ -201,7 +166,7 @@ function formatValue(key: string | undefined, value: unknown, prefix: boolean, o
 
     switch (valueType) {
         case 'string':
-            keyValueString += chalk.white(String(value))
+            keyValueString += chalk.grey(String(value))
             break
         case 'boolean':
             keyValueString += chalk.yellow(String(value))

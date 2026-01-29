@@ -8,8 +8,6 @@ import { FormatMessage, type PinoZenOptions, type StringFormatter } from './pino
 const { values } = parseArgs({
     options: {
         dim: { type: 'string', short: 'd', multiple: true },
-        right: { type: 'string', short: 'r', multiple: true },
-        left: { type: 'string', short: 'l', multiple: true },
         error: { type: 'string', short: 'e', multiple: true },
         module: { type: 'string', short: 'm' },
     },
@@ -23,29 +21,11 @@ function addFormatOption(key: string, value: StringFormatter) {
     formatter[key] = { ...formatter[key], ...value }
 }
 
-function addPad(value: string, direction: 'padStart' | 'padEnd') {
-    const eq = value.indexOf('=')
-    if (eq === -1) {
-        return
-    }
-    const key = value.slice(0, eq)
-    const num = Number(value.slice(eq + 1))
-    if (Number.isInteger(num) && num > 0) {
-        addFormatOption(key, { [direction]: num })
-    }
-}
-
 for (const v of (values.dim as string[]) ?? []) {
     addFormatOption(v, { dim: true })
 }
 for (const v of (values.error as string[]) ?? []) {
     addFormatOption(v, { error: true })
-}
-for (const v of (values.left as string[]) ?? []) {
-    addPad(v, 'padStart')
-}
-for (const v of (values.right as string[]) ?? []) {
-    addPad(v, 'padEnd')
 }
 
 if (values.module) {
