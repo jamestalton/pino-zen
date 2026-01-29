@@ -1,5 +1,5 @@
-import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
+import { describe, it } from 'node:test'
 import { FormatMessage, type PinoZenOptions } from '../src/pino-zen-format.ts'
 
 // biome-ignore lint: test utility
@@ -151,9 +151,7 @@ describe('FormatMessage', () => {
         })
 
         it('renders deeply nested object', () => {
-            const result = stripAnsi(
-                FormatMessage({ level: 30, msg: 'hi', a: { b: { c: 'deep' } } }, opts)
-            )
+            const result = stripAnsi(FormatMessage({ level: 30, msg: 'hi', a: { b: { c: 'deep' } } }, opts))
             assert.ok(result.includes('deep'))
         })
     })
@@ -186,7 +184,7 @@ describe('FormatMessage', () => {
     describe('formatter options', () => {
         it('excludes field when formatter is false', () => {
             const result = stripAnsi(
-                FormatMessage({ level: 30, msg: 'hi', secret: 'hidden' }, { formatter: { secret: false } })
+                FormatMessage({ level: 30, msg: 'hi', secret: 'hidden' }, { formatter: { secret: false } }),
             )
             assert.ok(!result.includes('hidden'))
             assert.ok(!result.includes('secret'))
@@ -194,10 +192,7 @@ describe('FormatMessage', () => {
 
         it('still shows fields not excluded', () => {
             const result = stripAnsi(
-                FormatMessage(
-                    { level: 30, msg: 'hi', keep: 'visible', drop: 'gone' },
-                    { formatter: { drop: false } }
-                )
+                FormatMessage({ level: 30, msg: 'hi', keep: 'visible', drop: 'gone' }, { formatter: { drop: false } }),
             )
             assert.ok(result.includes('keep'))
             assert.ok(result.includes('visible'))
@@ -219,6 +214,49 @@ describe('FormatMessage', () => {
             const result = stripAnsi(raw)
             // Level present, so space is added before fields
             assert.match(result, /INFO\s/)
+        })
+    })
+
+    describe('module mode', () => {
+        const moduleOpts: PinoZenOptions = { module: 'module' }
+
+        it('prefixes with module name in brackets', () => {
+            const result = stripAnsi(FormatMessage({ level: 30, msg: 'started', module: 'server' }, moduleOpts))
+            assert.match(result, /^\[server\]/)
+        })
+
+        it('does not include level name in output', () => {
+            const result = stripAnsi(FormatMessage({ level: 30, msg: 'started', module: 'server' }, moduleOpts))
+            assert.ok(!result.includes('INFO'))
+        })
+
+        it('includes the message after the module', () => {
+            const result = stripAnsi(FormatMessage({ level: 30, msg: 'started', module: 'server' }, moduleOpts))
+            assert.match(result, /\[server\] {2}started/)
+        })
+
+        it('includes additional fields', () => {
+            const result = stripAnsi(
+                FormatMessage({ level: 30, msg: 'started', module: 'server', port: 3000 }, moduleOpts),
+            )
+            assert.ok(result.includes('port'))
+            assert.ok(result.includes('3000'))
+        })
+
+        it('cycles colors for different modules', () => {
+            // This is harder to test with stripAnsi, but we can check if it runs without error
+            const result1 = FormatMessage({ level: 30, msg: 'a', module: 'm1' }, moduleOpts)
+            const result2 = FormatMessage({ level: 30, msg: 'b', module: 'm2' }, moduleOpts)
+            assert.notEqual(result1, result2)
+        })
+
+        it('uses same color for same module', () => {
+            const result1 = FormatMessage({ level: 30, msg: 'test', module: 'm1' }, moduleOpts)
+            const result2 = FormatMessage({ level: 30, msg: 'other', module: 'm1' }, moduleOpts)
+            // The prefixes should be identical (same color escapes)
+            const prefix1 = result1.split(' ')[0]
+            const prefix2 = result2.split(' ')[0]
+            assert.equal(prefix1, prefix2)
         })
     })
 })

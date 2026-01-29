@@ -1,6 +1,6 @@
 import { once } from 'node:events'
 import { fstatSync } from 'node:fs'
-import { Writable, pipeline } from 'node:stream'
+import { pipeline, Writable } from 'node:stream'
 import { parseArgs } from 'node:util'
 import split2 from 'split2'
 import { FormatMessage, type PinoZenOptions, type StringFormatter } from './pino-zen-format.js'
@@ -11,6 +11,7 @@ const { values } = parseArgs({
         right: { type: 'string', short: 'r', multiple: true },
         left: { type: 'string', short: 'l', multiple: true },
         error: { type: 'string', short: 'e', multiple: true },
+        module: { type: 'string', short: 'm' },
     },
     strict: false,
 })
@@ -45,6 +46,10 @@ for (const v of (values.left as string[]) ?? []) {
 }
 for (const v of (values.right as string[]) ?? []) {
     addPad(v, 'padEnd')
+}
+
+if (values.module) {
+    pinoZenOptions.module = values.module as string
 }
 
 const myTransportStream = new Writable({
