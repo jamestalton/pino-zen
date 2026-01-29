@@ -1,0 +1,10 @@
+{"level":"trace","msg":"resolving module dependencies","module":"@app/auth","dependencies":3}
+{"level":"debug","msg":"database connection pool initialized","host":"localhost","port":5432,"pool":{"min":2,"max":10},"ssl":true}
+{"level":"info","msg":"server listening","url":"http://localhost:3000","env":"development","version":"2.0.8"}
+{"level":"info","msg":"user authenticated","userId":"u_83fk20d","method":"oauth","provider":"github","scopes":["read:user","repo"]}
+{"level":"info","msg":"request completed","method":"GET","path":"/api/projects","status":200,"duration":42}
+{"level":"info","msg":"request completed","method":"POST","path":"/api/projects","status":201,"duration":118}
+{"level":"warn","msg":"rate limit approaching","client":"api-key-9x3m","usage":487,"limit":500,"window":"1h"}
+{"level":"warn","msg":"deprecated endpoint called","path":"/api/v1/users","replacement":"/api/v2/users","sunsetDate":"2026-03-01"}
+{"level":"error","msg":"request failed","method":"POST","path":"/api/webhooks","status":502,"error":"upstream timeout","retries":3}
+{"level":"fatal","msg":"unhandled exception","error":"ECONNREFUSED","service":"payment-gateway","host":"10.0.1.50","port":443}

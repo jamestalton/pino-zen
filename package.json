@@ -34,7 +34,7 @@
         "node": ">=18"
     },
     "scripts": {
-        "start": "npm run build && cat test.txt | node lib/pino-zen-cli.js --right boolean=5 --dim boolean --error error",
+        "start": "npm run build && cat example.txt | node lib/pino-zen-cli.js",
         "build": "rm -rf lib && tsc && printf '%s\n' '#!/usr/bin/env node' \"$(cat lib/pino-zen-cli.js)\" > lib/pino-zen-cli.js",
         "tsc": "tsc --noEmit",
         "lint": "biome lint src",

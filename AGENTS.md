@@ -12,7 +12,7 @@ pino-zen is a colored log formatter for Pino JSON logs. It provides two interfac
 - `npm run lint` — Biome linter on src/
 - `npm run format` — Biome formatter on src/ (write mode)
 - `npm test` — Runs lint, type-check, and unit tests
-- `npm start` — Build + pipe test.txt through CLI with sample flags
+- `npm start` — Build + pipe example.txt through CLI
 
 ## Architecture
 

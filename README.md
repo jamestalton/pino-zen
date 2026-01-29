@@ -2,6 +2,8 @@
 
 Colored log formatter for [Pino](https://getpino.io) JSON logs.
 
+![pino-zen output](https://raw.githubusercontent.com/jamestalton/pino-zen/main/screenshot.png)
+
 ## Install
 
 ```sh
@@ -29,7 +31,7 @@ const logger = pino({
   },
   formatters: {
     bindings() {
-      return {};
+      return {}; // Return empty object to exclude pid and hostname
     },
   },
 });
