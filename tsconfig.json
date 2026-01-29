@@ -15,8 +15,6 @@
         "noImplicitAny": true,
         "outDir": "./lib",
         "removeComments": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
         "skipLibCheck": true,
         "esModuleInterop": true,
         "isolatedModules": true

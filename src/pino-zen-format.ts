@@ -99,8 +99,8 @@ export function FormatMessage(inputMessage: unknown, opts: PinoZenOptions): stri
 }
 
 function formatValue(key: string | undefined, value: unknown, prefix: boolean, opts: PinoZenOptions, noSemi?: boolean) {
-    if (opts.formatter?.key === false) {
-        return
+    if (key && opts.formatter?.[key] === false) {
+        return ''
     }
 
     let keyValueString = prefix ? chalk.blueBright.dim(noSemi ? ', ' : '  ') : ''
