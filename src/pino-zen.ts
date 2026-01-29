@@ -1,10 +1,10 @@
 import { once } from 'node:events'
 import build, { type OnUnknown } from 'pino-abstract-transport'
-import SonicBoom from 'sonic-boom'
+import { SonicBoom } from 'sonic-boom'
 import type { Transform } from 'node:stream'
-import { FormatMessage, type PinoZenOptions } from './pino-zen-format'
+import { FormatMessage, type PinoZenOptions } from './pino-zen-format.js'
 
-export * from './pino-zen-format'
+export * from './pino-zen-format.js'
 export default async function (opts: PinoZenOptions) {
     const destination = new SonicBoom({ dest: opts.destination || 1, sync: false })
     await once(destination, 'ready')

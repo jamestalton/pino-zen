@@ -3,7 +3,7 @@ import { fstatSync } from 'node:fs'
 import { Writable, pipeline } from 'node:stream'
 import { parseArgs } from 'node:util'
 import split2 from 'split2'
-import { FormatMessage, type PinoZenOptions, type StringFormatter } from './pino-zen-format'
+import { FormatMessage, type PinoZenOptions, type StringFormatter } from './pino-zen-format.js'
 
 const { values } = parseArgs({
     options: {

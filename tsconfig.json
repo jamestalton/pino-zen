@@ -1,22 +1,16 @@
 {
     "compilerOptions": {
-        "target": "ES2020",
-        "module": "ES2020",
-        "lib": ["ES2020"],
-        "allowSyntheticDefaultImports": true,
-        "allowJs": false,
+        "target": "ES2022",
+        "module": "Node16",
+        "lib": ["ES2022"],
         "sourceMap": false,
         "declaration": true,
-        "alwaysStrict": false,
-        "noUnusedLocals": false,
-        "noUnusedParameters": false,
         "noFallthroughCasesInSwitch": true,
-        "moduleResolution": "node",
+        "moduleResolution": "Node16",
         "noImplicitAny": true,
         "outDir": "./lib",
         "removeComments": true,
         "skipLibCheck": true,
-        "esModuleInterop": true,
         "isolatedModules": true
     },
     "include": ["src"]
