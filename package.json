@@ -30,12 +30,7 @@
         "build-mjs": "npx rollup --format es --file lib/pino-zen.mjs -- lib/pino-zen.js",
         "build-cli": "npx rollup --format es --file lib/pino-zen-cli.js -- lib/pino-zen-cli.js && echo '#!/usr/bin/env node' > ./lib/pino-zen-cli.mjs && cat ./lib/pino-zen-cli.js >> ./lib/pino-zen-cli.mjs",
         "build2": "rm -f lib/* && tsc && npx rollup --format es --file lib/pino-zen.mjs -- lib/pino-zen.js && npx rollup --format es --file lib/pino-zen-cli.js -- lib/pino-zen-cli.js && echo '#!/usr/bin/env node' > ./lib/pino-zen-cli.mjs && cat ./lib/pino-zen-cli.js >> ./lib/pino-zen-cli.mjs && rm -f lib/*.js && chmod +x ./lib/pino-zen-cli.mjs",
-        "build-2": "echo '#!/usr/bin/env node' > ./lib/pino-zen-cli.mjs && cat ./lib/pino-zen-cli.js >> ./lib/pino-zen-cli.mjs && rm -f lib/*.js && chmod +x ./lib/pino-zen-cli.mjs",
-        "test": "npm run eslint && npm run prettier",
-        "eslint": "eslint src",
-        "eslint:fix": "eslint src",
-        "prettier": "prettier --check src",
-        "prettier:fix": "prettier --write src"
+        "build-2": "echo '#!/usr/bin/env node' > ./lib/pino-zen-cli.mjs && cat ./lib/pino-zen-cli.js >> ./lib/pino-zen-cli.mjs && rm -f lib/*.js && chmod +x ./lib/pino-zen-cli.mjs"
     },
     "dependencies": {
         "@types/args": "^5.0.0",
@@ -48,49 +43,7 @@
     "devDependencies": {
         "@types/node": "^18.x.x",
         "@types/split2": "^3.2.1",
-        "@typescript-eslint/eslint-plugin": "^5.49.0",
-        "@typescript-eslint/parser": "^5.49.0",
-        "eslint": "^8.33.0",
-        "eslint-config-prettier": "^8.6.0",
-        "eslint-plugin-prettier": "^4.2.1",
-        "prettier": "^2.8.3",
         "ts-node": "^10.9.1",
         "typescript": "^4.9.4"
-    },
-    "prettier": {
-        "printWidth": 120,
-        "tabWidth": 4,
-        "semi": false,
-        "singleQuote": true
-    },
-    "eslintConfig": {
-        "parser": "@typescript-eslint/parser",
-        "parserOptions": {
-            "ecmaVersion": 2018,
-            "sourceType": "module",
-            "project": [
-                "./tsconfig.json",
-                "./test/tsconfig.json"
-            ]
-        },
-        "extends": [
-            "eslint:recommended",
-            "plugin:@typescript-eslint/eslint-recommended",
-            "plugin:@typescript-eslint/recommended",
-            "plugin:@typescript-eslint/recommended-requiring-type-checking",
-            "plugin:prettier/recommended"
-        ],
-        "rules": {
-            "@typescript-eslint/no-use-before-define": "off",
-            "@typescript-eslint/no-unused-vars": "off",
-            "@typescript-eslint/no-floating-promises": [
-                "error",
-                {
-                    "ignoreVoid": true
-                }
-            ],
-            "no-console": "error",
-            "no-process-exit": "error"
-        }
     }
 }
