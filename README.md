@@ -40,6 +40,33 @@ const logger = pino({
 });
 ```
 
+### Module Mode
+
+Pino Zen includes a "Module Mode" that prepends a color-coded and right-aligned module name to your logs. This is especially useful for microservices or mono-repos where you want to distinguish logs from different components at a glance.
+
+#### Performance & Alignment
+
+Module names are automatically tracked, and the prefix is right-aligned based on the longest module name encountered during the process lifecycle.
+
+```js
+const logger = pino({
+  transport: {
+      target: "pino-zen",
+      options: { module: "module" },
+  }
+});
+
+logger.info({ module: "api" }, "request processed");
+logger.info({ module: "auth" }, "user verified");
+```
+
+Output:
+
+```text
+ [api]  INFO:request processed
+[auth]  INFO:user verified
+```
+
 ### CLI Pipe
 
 Pipe any NDJSON log output through the `pino-zen` CLI:
@@ -50,15 +77,12 @@ node app.js | pino-zen
 
 #### CLI Options
 
-| Flag | Description | Example |
-|------|-------------|---------|
-| `-d`, `--dim` | Dim a field | `pino-zen -d hostname` |
-| `-e`, `--error` | Color a field as error | `pino-zen -e err` |
-| `-r`, `--right` | Pad a field on the right | `pino-zen -r msg=20` |
-| `-l`, `--left` | Pad a field on the left | `pino-zen -l level=5` |
+| Flag | Short | Description | Example |
+|------|-------|-------------|---------|
+| `--module` | `-m` | Use a field as the module prefix | `pino-zen -m module` |
 
-Flags can be repeated:
+Example usage:
 
 ```sh
-node app.js | pino-zen -d hostname -d pid -r msg=30 -e err
+node app.js | pino-zen -m service
 ```

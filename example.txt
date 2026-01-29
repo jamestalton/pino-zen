@@ -1,5 +1,5 @@
-{"level":30,"msg":"server started","module":"server","port":3000}
-{"level":30,"msg":"database connection initialized","module":"db","host":"localhost"}
+{"level":30,"msg":"started","module":"server","port":3000}
+{"level":30,"msg":"opened","module":"db","host":"localhost"}
 {"level":20,"msg":"querying users","module":"db","query":"SELECT * FROM users"}
 {"level":30,"msg":"user authenticated","module":"auth","userId":123}
 {"level":10,"msg":"building assets","module":"build","progress":"50%"}

@@ -3,30 +3,16 @@ import { fstatSync } from 'node:fs'
 import { pipeline, Writable } from 'node:stream'
 import { parseArgs } from 'node:util'
 import split2 from 'split2'
-import { FormatMessage, type PinoZenOptions, type StringFormatter } from './pino-zen-format.js'
+import { FormatMessage, type PinoZenOptions } from './pino-zen-format.js'
 
 const { values } = parseArgs({
     options: {
-        dim: { type: 'string', short: 'd', multiple: true },
-        error: { type: 'string', short: 'e', multiple: true },
         module: { type: 'string', short: 'm' },
     },
     strict: false,
 })
 
-const formatter: Record<string, false | StringFormatter> = {}
-const pinoZenOptions: PinoZenOptions = { formatter }
-
-function addFormatOption(key: string, value: StringFormatter) {
-    formatter[key] = { ...formatter[key], ...value }
-}
-
-for (const v of (values.dim as string[]) ?? []) {
-    addFormatOption(v, { dim: true })
-}
-for (const v of (values.error as string[]) ?? []) {
-    addFormatOption(v, { error: true })
-}
+const pinoZenOptions: PinoZenOptions = {}
 
 if (values.module) {
     pinoZenOptions.module = values.module as string

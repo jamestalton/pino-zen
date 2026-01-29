@@ -254,6 +254,12 @@ describe('FormatMessage', () => {
             assert.ok(result.includes('3000'))
         })
 
+        it('does not include module field in additional fields', () => {
+            const result = stripAnsi(FormatMessage({ level: 30, msg: 'started', module: 'server' }, moduleOpts))
+            // It should be at the start but not in the fields area
+            assert.ok(!result.includes('module:server'))
+        })
+
         it('cycles colors for different modules', () => {
             ResetModuleMetadata()
             // This is harder to test with stripAnsi, but we can check if it runs without error

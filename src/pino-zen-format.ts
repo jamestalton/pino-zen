@@ -7,13 +7,8 @@ const ArrayEnd = chalk.yellow(' ]')
 
 export interface PinoZenOptions {
     destination?: string | number
-    formatter?: Record<string, false | StringFormatter>
+    formatter?: Record<string, false>
     module?: string
-}
-
-export interface StringFormatter {
-    error?: boolean
-    dim?: boolean
 }
 
 const moduleColorCache = new Map<string, (s: string) => string>()
@@ -101,6 +96,7 @@ export function FormatMessage(inputMessage: unknown, opts: PinoZenOptions): stri
                 case 'msg':
                 case 'time':
                 case 'level':
+                case opts.module as string:
                     break
                 default: {
                     const value = message[key]
@@ -119,6 +115,7 @@ export function FormatMessage(inputMessage: unknown, opts: PinoZenOptions): stri
                 case 'msg':
                 case 'time':
                 case 'level':
+                case opts.module as string:
                     break
                 default: {
                     const value = message[key]
