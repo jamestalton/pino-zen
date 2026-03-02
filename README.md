@@ -63,8 +63,34 @@ logger.info({ module: "auth" }, "user verified");
 Output:
 
 ```text
- [api]  INFO:request processed
-[auth]  INFO:user verified
+ [api] INFO:request processed
+[auth] INFO:user verified
+```
+
+### Field Suppression
+
+Use the `formatter` option to hide specific fields from output:
+
+```js
+const logger = pino({
+  transport: {
+    target: "pino-zen",
+    options: { formatter: { pid: false, hostname: false } },
+  },
+});
+```
+
+### Custom Destination
+
+By default the transport writes to stdout. Pass a file path or file descriptor via `destination`:
+
+```js
+const logger = pino({
+  transport: {
+    target: "pino-zen",
+    options: { destination: "/var/log/app.log" },
+  },
+});
 ```
 
 ### CLI Pipe
