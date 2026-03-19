@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 268">
+  <style>
+    .bg { fill: #1e1e1e; rx: 8; }
+    text { font-family: 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono', monospace; font-size: 14px; white-space: pre; }
+    .mod-blue { fill: #5c7cfa; }
+    .mod-magenta { fill: #da77f2; }
+    .mod-cyan { fill: #66d9e8; }
+    .mod-blue-br { fill: #91a7ff; }
+    .mod-magenta-br { fill: #f09aff; }
+    .mod-cyan-br { fill: #99e9f2; }
+    .info { fill: #69db7c; font-weight: bold; }
+    .debug { fill: #748ffc; font-weight: bold; }
+    .trace { fill: #e599f7; font-weight: bold; }
+    .warn { fill: #ffe066; font-weight: bold; }
+    .error { fill: #ff6b6b; font-weight: bold; }
+    .fatal-bg { fill: #ff6b6b; }
+    .fatal { fill: #000; font-weight: bold; }
+    .msg { fill: #fff; font-weight: bold; }
+    .sep { fill: #4c6ea5; }
+    .key { fill: #66d9e8; }
+    .str { fill: #909090; }
+    .num { fill: #69db7c; }
+  </style>
+  <rect class="bg" width="620" height="268" rx="8"/>
+  <text xml:space="preserve">
+    <tspan x="16" y="36"><tspan class="mod-blue">[server]</tspan> <tspan class="info">INFO</tspan><tspan class="sep">:</tspan><tspan class="msg">started</tspan>  <tspan class="key">port</tspan><tspan class="sep">:</tspan><tspan class="num">3000</tspan></tspan>
+    <tspan x="16" y="58"><tspan class="mod-magenta">    [db]</tspan> <tspan class="info">INFO</tspan><tspan class="sep">:</tspan><tspan class="msg">opened</tspan>  <tspan class="key">host</tspan><tspan class="sep">:</tspan><tspan class="str">localhost</tspan></tspan>
+    <tspan x="16" y="80"><tspan class="mod-magenta">    [db]</tspan> <tspan class="debug">DEBUG</tspan><tspan class="sep">:</tspan><tspan class="msg">querying users</tspan>  <tspan class="key">query</tspan><tspan class="sep">:</tspan><tspan class="str">SELECT * FROM users</tspan></tspan>
+    <tspan x="16" y="102"><tspan class="mod-cyan">  [auth]</tspan> <tspan class="info">INFO</tspan><tspan class="sep">:</tspan><tspan class="msg">user authenticated</tspan>  <tspan class="key">userId</tspan><tspan class="sep">:</tspan><tspan class="num">123</tspan></tspan>
+    <tspan x="16" y="124"><tspan class="mod-blue-br"> [build]</tspan> <tspan class="trace">TRACE</tspan><tspan class="sep">:</tspan><tspan class="msg">building assets</tspan>  <tspan class="key">progress</tspan><tspan class="sep">:</tspan><tspan class="str">50%</tspan></tspan>
+    <tspan x="16" y="146"><tspan class="mod-magenta-br">   [api]</tspan> <tspan class="info">INFO</tspan><tspan class="sep">:</tspan><tspan class="msg">request processed</tspan>  <tspan class="key">method</tspan><tspan class="sep">:</tspan><tspan class="str">GET</tspan>  <tspan class="key">path</tspan><tspan class="sep">:</tspan><tspan class="str">/users</tspan></tspan>
+    <tspan x="16" y="168"><tspan class="mod-magenta">    [db]</tspan> <tspan class="warn">WARN</tspan><tspan class="sep">:</tspan><tspan class="msg">slow query detected</tspan>  <tspan class="key">duration</tspan><tspan class="sep">:</tspan><tspan class="num">150</tspan></tspan>
+    <tspan x="16" y="190"><tspan class="mod-cyan-br">[mailer]</tspan> <tspan class="error">ERROR</tspan><tspan class="sep">:</tspan><tspan class="msg">failed to send email</tspan>  <tspan class="key">error</tspan><tspan class="sep">:</tspan><tspan class="str">SMTP timeout</tspan></tspan>
+    <tspan x="16" y="212"><tspan class="mod-blue"> [cache]</tspan> <tspan class="info">INFO</tspan><tspan class="sep">:</tspan><tspan class="msg">cache cleared</tspan>  <tspan class="key">type</tspan><tspan class="sep">:</tspan><tspan class="str">redis</tspan></tspan>
+    <tspan x="16" y="234"><tspan class="mod-magenta">[system]</tspan> <tspan class="fatal">FATAL</tspan><tspan class="sep">:</tspan><tspan class="msg">system watchdog failure</tspan></tspan>
+  </text>
+  <!-- FATAL background -->
+  <rect class="fatal-bg" x="93" y="220" width="43" height="18" rx="2"/>
+  <text xml:space="preserve"><tspan x="93" y="234" class="fatal">FATAL</tspan></text>
+</svg>

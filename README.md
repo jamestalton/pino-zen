@@ -1,83 +1,41 @@
 # pino-zen
 
-Colored log formatter for [Pino](https://getpino.io) JSON logs.
+Colored log formatter for [Pino](https://getpino.io) JSON logs. Works as a **Pino transport** or a **CLI pipe**.
 
-![pino-zen output](https://raw.githubusercontent.com/jamestalton/pino-zen/main/screenshot.png)
+<img src="screenshot.svg" alt="pino-zen output" width="620">
 
 ## Install
 
 ```sh
-npm install pino-zen
+npm install pino-zen        # project dependency
+npm install -g pino-zen     # global CLI
+npx pino-zen                # run without installing
 ```
 
-## Usage
-
-### Pino Transport
-
-Use `pino-zen` directly as a Pino transport for colored console output alongside other targets:
+## Pino Transport
 
 ```js
-import pino from "pino";
+import pino from "pino"
 
-const level = process.env.LOG_LEVEL
-if (!["debug", "info", "warn", "error", "trace"].includes(level)) {
-  throw new Error(`Invalid log level: ${level}`);
-}
-
-const logger = pino({
-  level,
-  transport: {
-    targets: [
-      { target: "pino/file", level, options: { destination: "app.log", append: false } },
-      { target: "pino-zen", level, options: {} },
-    ],
-  },
-  formatters: {
-    bindings() {
-      return {}; // Return empty object to exclude pid and hostname
-    },
-  },
-});
-```
-
-### Module Mode
-
-Pino Zen includes a "Module Mode" that prepends a color-coded and right-aligned module name to your logs. This is especially useful for microservices or mono-repos where you want to distinguish logs from different components at a glance.
-
-#### Performance & Alignment
-
-Module names are automatically tracked, and the prefix is right-aligned based on the longest module name encountered during the process lifecycle.
-
-```js
-const logger = pino({
-  transport: {
-      target: "pino-zen",
-      options: { module: "module" },
-  }
-});
-
-logger.info({ module: "api" }, "request processed");
-logger.info({ module: "auth" }, "user verified");
-```
-
-Output:
-
-```text
- [api] INFO:request processed
-[auth] INFO:user verified
-```
-
-### Field Suppression
-
-Use the `formatter` option to hide specific fields from output:
-
-```js
 const logger = pino({
   transport: {
     target: "pino-zen",
-    options: { formatter: { pid: false, hostname: false } },
   },
-});
+})
+```
+
+### Multiple Targets
+
+```js
+const logger = pino({
+  level: "debug",
+  transport: {
+    targets: [
+      { target: "pino/file", options: { destination: "app.log" } },
+      { target: "pino-zen" },
+    ],
+  },
+})
 ```
 
 ### Custom Destination
@@ -85,30 +43,70 @@ const logger = pino({
 By default the transport writes to stdout. Pass a file path or file descriptor via `destination`:
 
 ```js
-const logger = pino({
-  transport: {
-    target: "pino-zen",
-    options: { destination: "/var/log/app.log" },
-  },
-});
+{ target: "pino-zen", options: { destination: "/var/log/app.log" } }
 ```
 
-### CLI Pipe
+## CLI
 
-Pipe any NDJSON log output through the `pino-zen` CLI:
+Pipe any Pino NDJSON output through the CLI:
 
 ```sh
 node app.js | pino-zen
+node app.js | npx pino-zen
 ```
 
-#### CLI Options
+| Flag | Short | Description |
+|------|-------|-------------|
+| `--module <field>` | `-m` | Use a field as the module prefix |
 
-| Flag | Short | Description | Example |
-|------|-------|-------------|---------|
-| `--module` | `-m` | Use a field as the module prefix | `pino-zen -m module` |
+## Options
 
-Example usage:
+These options work with both the transport and the CLI.
+
+### Module Mode
+
+Prepends a color-coded, right-aligned module name to each log line. Useful for distinguishing logs from different components.
+
+**Transport:**
+
+```js
+const logger = pino({
+  transport: {
+    target: "pino-zen",
+    options: { module: "name" },
+  },
+})
+
+logger.info({ name: "api" }, "request processed")
+logger.info({ name: "auth" }, "user verified")
+```
+
+**CLI:**
 
 ```sh
-node app.js | pino-zen -m service
+node app.js | pino-zen -m name
 ```
+
+**Output:**
+
+```text
+ [api] INFO request processed
+[auth] INFO user verified
+```
+
+Module names are automatically color-cycled and right-aligned to the longest name seen.
+
+### Field Suppression
+
+Hide specific fields from output with the `formatter` option:
+
+```js
+{
+  target: "pino-zen",
+  options: { formatter: { pid: false, hostname: false } },
+}
+```
+
+## License
+
+MIT
