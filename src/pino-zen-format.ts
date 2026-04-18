@@ -79,7 +79,7 @@ export function FormatMessage(inputMessage: unknown, opts: PinoZenOptions): stri
 
     const levelLabel = getLevelLabel(level)
     if (levelLabel) {
-        if (line.length === 0 && (level === 30 || level === 'info' || level === 40 || level === 'warn')) {
+        if (level === 30 || level === 'info' || level === 40 || level === 'warn') {
             line += ' '
         }
         line += levelLabel

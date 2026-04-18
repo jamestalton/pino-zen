@@ -8,6 +8,7 @@
         "strict": true,
         "moduleResolution": "Node16",
         "outDir": "./lib",
+        "rootDir": "./src",
         "removeComments": true,
         "skipLibCheck": true,
         "verbatimModuleSyntax": true

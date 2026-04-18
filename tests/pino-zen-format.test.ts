@@ -234,7 +234,7 @@ describe('FormatMessage', () => {
 
         it('includes the message after the module and level', () => {
             const result = stripAnsi(FormatMessage({ level: 30, msg: 'started', module: 'server' }, moduleOpts))
-            assert.match(result, /\[server\] INFO:started/)
+            assert.match(result, /\[server\] {2}INFO:started/)
         })
 
         it('aligns shorter module names to the right', () => {

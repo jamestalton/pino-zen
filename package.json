@@ -44,13 +44,13 @@
     "dependencies": {
         "chalk": "^5.6.2",
         "pino-abstract-transport": "^3.0.0",
-        "sonic-boom": "^4.2.1",
+        "sonic-boom": "^5.0.0",
         "split2": "^4.2.0"
     },
     "devDependencies": {
-        "@biomejs/biome": "^2.4.5",
+        "@biomejs/biome": "^2.4.12",
         "@types/node": "^25.x.x",
         "@types/split2": "^4.2.3",
-        "typescript": "^5.9.3"
+        "typescript": "^6.0.3"
     }
 }
