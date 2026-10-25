@@ -35,11 +35,11 @@
     },
     "scripts": {
         "start": "npm run build && cat example.txt | node lib/pino-zen-cli.js -m module",
-        "build": "rm -rf lib && tsc && printf '%s\n' '#!/usr/bin/env node' \"$(cat lib/pino-zen-cli.js)\" > lib/pino-zen-cli.js",
+        "build": "rm -rf lib && tsc",
         "tsc": "tsc --noEmit",
-        "lint": "biome lint src",
-        "format": "biome format src --write",
-        "test": "npm run lint && npm run tsc && node --experimental-strip-types --test tests/*.test.ts"
+        "lint": "biome check src tests",
+        "format": "biome check --write src tests",
+        "test": "npm run lint && npm run build && node --experimental-strip-types --test tests/*.test.ts"
     },
     "dependencies": {
         "chalk": "^6.0.1",
@@ -51,6 +51,7 @@
         "@biomejs/biome": "^2.6.3",
         "@types/node": "^26.x.x",
         "@types/split2": "^4.2.3",
+        "pino": "^10.4.0",
         "typescript": "^7.0.2"
     }
 }

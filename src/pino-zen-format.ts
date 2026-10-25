@@ -6,8 +6,11 @@ const ArrayStart = chalk.blueBright.dim(':') + chalk.yellow('[ ')
 const ArrayEnd = chalk.yellow(' ]')
 
 export interface PinoZenOptions {
+    /** Transport only: file path or file descriptor to write to. Defaults to 1 (stdout). */
     destination?: string | number
+    /** Fields to hide, e.g. `{ pid: false, hostname: false }`. Applies to nested keys too. */
     formatter?: Record<string, false>
+    /** Name of the field to show as a color-coded `[module]` prefix. */
     module?: string
 }
 
@@ -58,8 +61,8 @@ function getLevelLabel(level: unknown): string {
 }
 
 export function FormatMessage(inputMessage: unknown, opts: PinoZenOptions): string {
-    if (typeof inputMessage === 'string') {
-        return inputMessage
+    if (typeof inputMessage !== 'object' || inputMessage === null) {
+        return String(inputMessage)
     }
     const message = inputMessage as Record<string, unknown>
 
@@ -75,6 +78,9 @@ export function FormatMessage(inputMessage: unknown, opts: PinoZenOptions): stri
 
         const color = getModuleColor(moduleName)
         line = `${color(paddedName)} `
+    } else if (opts.module && maxModuleLength) {
+        // Keep columns aligned for lines without a module
+        line = ' '.repeat(maxModuleLength + 1)
     }
 
     const levelLabel = getLevelLabel(level)
@@ -85,49 +91,46 @@ export function FormatMessage(inputMessage: unknown, opts: PinoZenOptions): stri
         line += levelLabel
     }
 
-    if (msg && typeof msg === 'string') {
+    // pino emits msg as a string; anything else is rendered as a regular field
+    const hasMsg = typeof msg === 'string' && msg !== ''
+    if (hasMsg) {
         if (levelLabel) {
             line += chalk.blueBright.dim(':')
         }
         line += chalk.whiteBright.bold(msg)
+    } else if (levelLabel) {
+        line += ' '
+    }
 
-        for (const key in message) {
-            switch (key) {
-                case 'msg':
-                case 'time':
-                case 'level':
-                case opts.module as string:
-                    break
-                default: {
-                    const value = message[key]
-                    line += formatValue(key, value, true, opts)
-                    break
-                }
-            }
+    let pad = hasMsg
+    let stacks = ''
+    for (const key in message) {
+        if (key === 'time' || key === 'level' || key === opts.module || (key === 'msg' && typeof msg === 'string')) {
+            continue
         }
-    } else {
-        if (message.level) {
-            line += ' '
+        let value = message[key]
+        let stack: string | undefined
+        if (isErrorLike(value)) {
+            // Render the stack on its own lines after the entry instead of inline
+            const { stack: errorStack, ...rest } = value
+            stack = errorStack
+            value = rest
         }
-        let pad = false
-        for (const key in message) {
-            switch (key) {
-                case 'msg':
-                case 'time':
-                case 'level':
-                case opts.module as string:
-                    break
-                default: {
-                    const value = message[key]
-                    line += formatValue(key, value, pad, opts)
-                    pad = true
-                    break
-                }
+        const formatted = formatValue(key, value, pad, opts)
+        if (formatted) {
+            line += formatted
+            pad = true
+            if (stack) {
+                stacks += `\n${chalk.grey(stack)}`
             }
         }
     }
 
-    return line
+    return line + stacks
+}
+
+function isErrorLike(value: unknown): value is Record<string, unknown> & { stack: string } {
+    return typeof value === 'object' && value !== null && typeof (value as { stack?: unknown }).stack === 'string'
 }
 
 function formatValue(key: string | undefined, value: unknown, prefix: boolean, opts: PinoZenOptions, noSemi?: boolean) {

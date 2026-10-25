@@ -18,6 +18,16 @@ describe('FormatMessage', () => {
         })
     })
 
+    describe('non-object input', () => {
+        it('stringifies null instead of throwing', () => {
+            assert.equal(FormatMessage(null, opts), 'null')
+        })
+
+        it('stringifies numbers', () => {
+            assert.equal(FormatMessage(123, opts), '123')
+        })
+    })
+
     describe('numeric log levels', () => {
         it('formats TRACE (10)', () => {
             const result = stripAnsi(FormatMessage({ level: 10, msg: 'test' }, opts))
@@ -88,6 +98,11 @@ describe('FormatMessage', () => {
             assert.ok(!result.match(/^(TRACE|DEBUG|INFO|WARN|ERROR|FATAL)/))
         })
 
+        it('adds no leading space for unknown level without msg', () => {
+            const result = stripAnsi(FormatMessage({ level: 99, a: 1 }, opts))
+            assert.equal(result, 'a:1')
+        })
+
         it('produces no level prefix when level is absent', () => {
             const result = stripAnsi(FormatMessage({ msg: 'test' }, opts))
             assert.ok(!result.match(/^(TRACE|DEBUG|INFO|WARN|ERROR|FATAL)/))
@@ -98,6 +113,11 @@ describe('FormatMessage', () => {
         it('includes msg in output', () => {
             const result = stripAnsi(FormatMessage({ level: 30, msg: 'hello world' }, opts))
             assert.ok(result.includes('hello world'))
+        })
+
+        it('renders a non-string msg as a field', () => {
+            const result = stripAnsi(FormatMessage({ level: 30, msg: 42 }, opts))
+            assert.equal(result, ' INFO msg:42')
         })
 
         it('handles missing msg', () => {
@@ -174,6 +194,20 @@ describe('FormatMessage', () => {
         })
     })
 
+    describe('errors', () => {
+        const err = { type: 'Error', message: 'boom', stack: 'Error: boom\n    at fn (file.js:1:1)' }
+
+        it('renders the stack on separate lines after the entry', () => {
+            const result = stripAnsi(FormatMessage({ level: 50, msg: 'failed', err }, opts))
+            assert.equal(result, 'ERROR:failed  err:{ type:Error  message:boom }\nError: boom\n    at fn (file.js:1:1)')
+        })
+
+        it('omits the stack when the error field is excluded', () => {
+            const result = stripAnsi(FormatMessage({ level: 50, msg: 'failed', err }, { formatter: { err: false } }))
+            assert.equal(result, 'ERROR:failed')
+        })
+    })
+
     describe('null values', () => {
         it('renders null field key without value', () => {
             const result = stripAnsi(FormatMessage({ level: 30, msg: 'hi', gone: null }, opts))
@@ -188,6 +222,11 @@ describe('FormatMessage', () => {
             )
             assert.ok(!result.includes('hidden'))
             assert.ok(!result.includes('secret'))
+        })
+
+        it('does not leave extra spacing where a field was excluded', () => {
+            const result = stripAnsi(FormatMessage({ level: 30, pid: 1, x: 2 }, { formatter: { pid: false } }))
+            assert.equal(result, ' INFO x:2')
         })
 
         it('still shows fields not excluded', () => {
@@ -244,6 +283,13 @@ describe('FormatMessage', () => {
             // Second call with "[db]" (4 chars) should have 4 leading spaces
             const result = stripAnsi(FormatMessage({ level: 30, msg: 'b', module: 'db' }, moduleOpts))
             assert.match(result, /^ {4}\[db\]/)
+        })
+
+        it('pads lines without a module to keep columns aligned', () => {
+            ResetModuleMetadata()
+            FormatMessage({ level: 30, msg: 'a', module: 'server' }, moduleOpts)
+            const result = stripAnsi(FormatMessage({ level: 30, msg: 'b' }, moduleOpts))
+            assert.equal(result, '          INFO:b')
         })
 
         it('includes additional fields', () => {

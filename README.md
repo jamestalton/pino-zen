@@ -6,6 +6,8 @@ Colored log formatter for [Pino](https://getpino.io) JSON logs. Works as a **Pin
 
 ## Install
 
+Requires Node.js 22 or later.
+
 ```sh
 npm install pino-zen        # project dependency
 npm install -g pino-zen     # global CLI
@@ -58,10 +60,12 @@ node app.js | npx pino-zen
 | Flag | Short | Description |
 |------|-------|-------------|
 | `--module <field>` | `-m` | Use a field as the module prefix |
+| `--help` | `-h` | Show usage |
+| `--version` | `-v` | Show the version |
+
+Lines that are not JSON objects are printed unchanged, so mixed output is safe to pipe. When reading from a pipe, the CLI ignores Ctrl+C so the upstream process can exit first and its final log lines still get formatted.
 
 ## Options
-
-These options work with both the transport and the CLI.
 
 ### Module Mode
 
@@ -98,13 +102,29 @@ Module names are automatically color-cycled and right-aligned to the longest nam
 
 ### Field Suppression
 
-Hide specific fields from output with the `formatter` option:
+Hide specific fields from output with the `formatter` option (transport only). Matching keys are hidden at every nesting level:
 
 ```js
 {
   target: "pino-zen",
   options: { formatter: { pid: false, hostname: false } },
 }
+```
+
+## Output
+
+- `time` is never shown. `msg` follows the level; all other fields are rendered as `key:value`, with objects as `key:{ ... }` and arrays as `key:[ ... ]`.
+- Error objects (any field with a string `stack`, such as pino's `err`) are rendered without the stack inline, and the stack is printed on the lines below the entry.
+- Colors follow [chalk](https://github.com/chalk/chalk#supportscolor) detection. Set `NO_COLOR=1` or `FORCE_COLOR=0` to disable them, or `FORCE_COLOR=1` to force them (e.g. when writing to a file).
+
+## Programmatic Use
+
+The formatter is exported for use outside a transport:
+
+```js
+import { FormatMessage } from "pino-zen"
+
+console.log(FormatMessage({ level: 30, msg: "hello", port: 3000 }, { module: "name" }))
 ```
 
 ## License
