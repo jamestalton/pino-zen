@@ -3,7 +3,7 @@ on:
     workflow_dispatch:
         inputs:
             versionIncrement:
-                description: 'Version Increment'
+                description: 'Version Increment (none publishes the current package.json version)'
                 required: true
                 default: 'patch'
                 type: choice
@@ -11,9 +11,10 @@ on:
                     - major
                     - minor
                     - patch
+                    - none
 permissions:
     contents: write
-    id-token: write # npm provenance
+    id-token: write # npm trusted publishing (OIDC)
 
 jobs:
     npm-publish:
@@ -22,9 +23,10 @@ jobs:
             - uses: actions/checkout@v7
             - uses: actions/setup-node@v7
               with:
-                  node-version: '22'
+                  node-version: '24' # trusted publishing needs npm >= 11.5.1
                   registry-url: https://registry.npmjs.org/
             - name: npm version ${{ github.event.inputs.versionIncrement }}
+              if: github.event.inputs.versionIncrement != 'none'
               run: |
                   TAG=$(npm version ${{ github.event.inputs.versionIncrement }} --no-git-tag-version)
                   echo "TAG=$(echo $TAG)" >> $GITHUB_ENV
@@ -32,10 +34,9 @@ jobs:
             - run: npm test
             - run: npm run build
             - uses: EndBug/add-and-commit@v11
+              if: github.event.inputs.versionIncrement != 'none'
               with:
                   default_author: github_actions
                   message: Release ${{ env.TAG }}
                   tag: ${{ env.TAG }}
-            - run: npm publish --provenance
-              env:
-                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+            - run: npm publish

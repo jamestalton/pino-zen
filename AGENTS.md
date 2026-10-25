@@ -25,7 +25,7 @@ pino-zen — A colored log formatter for Pino JSON logs. Two interfaces: a Pino 
 
 The CLI and transport tests use `lib/`, so they catch ESM/CJS interop bugs that tsc and the unit tests cannot (see sonic-boom below).
 
-**CI:** `.github/workflows/ci.yml` runs `npm test` on Node 22 and 24 for pushes to main and PRs. `publish.yml` is a manual release (version bump, test, tag, `npm publish --provenance`).
+**CI:** `.github/workflows/ci.yml` runs `npm test` on Node 22 and 24 for pushes to main and PRs. `publish.yml` is a manual release (version bump, test, tag, `npm publish`) using npm trusted publishing (OIDC, no token; provenance is automatic). Choose `none` to publish the current package.json version without bumping, e.g. to retry a failed publish.
 
 ## Source Files
 

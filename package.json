@@ -28,7 +28,7 @@
         }
     },
     "bin": {
-        "pino-zen": "./lib/pino-zen-cli.js"
+        "pino-zen": "lib/pino-zen-cli.js"
     },
     "engines": {
         "node": ">=22"
