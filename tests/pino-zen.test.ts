@@ -16,11 +16,13 @@ function logToFile(targetOptions: Record<string, unknown> | undefined, log: (log
     const transport = pino.transport({ targets: [{ target, options: { ...targetOptions, destination } }] })
     const logger = pino({ base: undefined }, transport)
     log(logger)
+    // The transport worker is unref'd, so keep the event loop alive until it closes (needed on Node 22)
+    const keepAlive = setInterval(() => {}, 1000)
     return new Promise<string>((resolve, reject) => {
         transport.on('error', reject)
         transport.on('close', () => resolve(readFileSync(destination, 'utf8')))
         transport.end()
-    })
+    }).finally(() => clearInterval(keepAlive))
 }
 
 describe('pino-zen transport', () => {
