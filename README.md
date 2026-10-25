@@ -9,9 +9,8 @@ Colored log formatter for [Pino](https://getpino.io) JSON logs. Works as a **Pin
 Requires Node.js 22 or later.
 
 ```sh
-npm install pino-zen        # project dependency
+npm install pino-zen        # project dependency (transport)
 npm install -g pino-zen     # global CLI
-npx pino-zen                # run without installing
 ```
 
 ## Pino Transport
@@ -20,17 +19,14 @@ npx pino-zen                # run without installing
 import pino from "pino"
 
 const logger = pino({
-  transport: {
-    target: "pino-zen",
-  },
+  transport: { target: "pino-zen" },
 })
 ```
 
-### Multiple Targets
+pino-zen is meant for reading logs in a terminal. In production, keep writing JSON and add pino-zen as a second target, or pipe through the CLI when you need to read the logs:
 
 ```js
 const logger = pino({
-  level: "debug",
   transport: {
     targets: [
       { target: "pino/file", options: { destination: "app.log" } },
@@ -40,44 +36,34 @@ const logger = pino({
 })
 ```
 
-### Custom Destination
-
-By default the transport writes to stdout. Pass a file path or file descriptor via `destination`:
-
-```js
-{ target: "pino-zen", options: { destination: "/var/log/app.log" } }
-```
-
 ## CLI
 
-Pipe any Pino NDJSON output through the CLI:
+Pipe Pino NDJSON output through the CLI:
 
 ```sh
 node app.js | pino-zen
-node app.js | npx pino-zen
+node app.js | npx pino-zen -m name
 ```
 
-| Flag | Short | Description |
-|------|-------|-------------|
-| `--module <field>` | `-m` | Use a field as the module prefix |
-| `--help` | `-h` | Show usage |
-| `--version` | `-v` | Show the version |
-
-Lines that are not JSON objects are printed unchanged, so mixed output is safe to pipe. When reading from a pipe, the CLI ignores Ctrl+C so the upstream process can exit first and its final log lines still get formatted.
+Lines that are not JSON objects are printed unchanged. When reading from a pipe, Ctrl+C is ignored so the upstream process can exit first and its final log lines still get formatted.
 
 ## Options
 
-### Module Mode
+| Option | CLI flag | Description |
+|--------|----------|-------------|
+| `module` | `-m, --module <field>` | Show this field as a color-coded `[module]` prefix |
+| `formatter` | — | Fields to hide, e.g. `{ pid: false, hostname: false }`. Matching keys are hidden at every nesting level |
+| `destination` | — | File path or file descriptor to write to. Default: `1` (stdout) |
+| — | `-h, --help` | Show usage |
+| — | `-v, --version` | Show the version |
 
-Prepends a color-coded, right-aligned module name to each log line. Useful for distinguishing logs from different components.
-
-**Transport:**
+Transport options go in `options`:
 
 ```js
 const logger = pino({
   transport: {
     target: "pino-zen",
-    options: { module: "name" },
+    options: { module: "name", formatter: { pid: false, hostname: false } },
   },
 })
 
@@ -85,46 +71,25 @@ logger.info({ name: "api" }, "request processed")
 logger.info({ name: "auth" }, "user verified")
 ```
 
-**CLI:**
-
-```sh
-node app.js | pino-zen -m name
-```
-
-**Output:**
-
 ```text
- [api] INFO request processed
-[auth] INFO user verified
+[api]  INFO:request processed
+[auth]  INFO:user verified
 ```
 
-Module names are automatically color-cycled and right-aligned to the longest name seen.
-
-### Field Suppression
-
-Hide specific fields from output with the `formatter` option (transport only). Matching keys are hidden at every nesting level:
-
-```js
-{
-  target: "pino-zen",
-  options: { formatter: { pid: false, hostname: false } },
-}
-```
+Each module name gets its own color, and the prefix is right-aligned to the longest name seen so far.
 
 ## Output
 
-- `time` is never shown. `msg` follows the level; all other fields are rendered as `key:value`, with objects as `key:{ ... }` and arrays as `key:[ ... ]`.
-- Error objects (any field with a string `stack`, such as pino's `err`) are rendered without the stack inline, and the stack is printed on the lines below the entry.
-- Colors follow [chalk](https://github.com/chalk/chalk#supportscolor) detection. Set `NO_COLOR=1` or `FORCE_COLOR=0` to disable them, or `FORCE_COLOR=1` to force them (e.g. when writing to a file).
+- `time` is never shown. `msg` follows the level; other fields are shown as `key:value`, with objects as `key:{ ... }` and arrays as `key:[ ... ]`.
+- Error stacks (e.g. pino's `err`) are printed on the lines below the entry.
+- Colors follow [chalk](https://github.com/chalk/chalk#supportscolor) detection. Set `NO_COLOR=1` to disable them, or `FORCE_COLOR=1` to force them (e.g. when writing to a file).
 
 ## Programmatic Use
-
-The formatter is exported for use outside a transport:
 
 ```js
 import { FormatMessage } from "pino-zen"
 
-console.log(FormatMessage({ level: 30, msg: "hello", port: 3000 }, { module: "name" }))
+console.log(FormatMessage({ level: 30, msg: "hello", port: 3000 }, {}))
 ```
 
 ## License
