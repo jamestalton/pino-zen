@@ -31,7 +31,7 @@
         "pino-zen": "./lib/pino-zen-cli.js"
     },
     "engines": {
-        "node": ">=18"
+        "node": ">=22"
     },
     "scripts": {
         "start": "npm run build && cat example.txt | node lib/pino-zen-cli.js -m module",
@@ -42,15 +42,15 @@
         "test": "npm run lint && npm run tsc && node --experimental-strip-types --test tests/*.test.ts"
     },
     "dependencies": {
-        "chalk": "^5.6.2",
+        "chalk": "^6.0.1",
         "pino-abstract-transport": "^3.0.0",
-        "sonic-boom": "^5.0.0",
+        "sonic-boom": "^5.0.2",
         "split2": "^4.2.0"
     },
     "devDependencies": {
-        "@biomejs/biome": "^2.4.13",
-        "@types/node": "^25.x.x",
+        "@biomejs/biome": "^2.6.3",
+        "@types/node": "^26.x.x",
         "@types/split2": "^4.2.3",
-        "typescript": "^6.0.3"
+        "typescript": "^7.0.2"
     }
 }

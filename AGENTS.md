@@ -6,7 +6,7 @@ AI agent context for the pino-zen repository. Read this file before making chang
 
 pino-zen v3.2.0 — A colored log formatter for Pino JSON logs. Two interfaces: a Pino transport (programmatic) and a CLI tool (stdin pipe).
 
-**Node.js >=18 required. ES modules only (`"type": "module"`).**
+**Node.js >=22 required. ES modules only (`"type": "module"`).**
 
 ## Commands
 
